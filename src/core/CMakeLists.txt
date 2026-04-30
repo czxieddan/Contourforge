@@ -4,6 +4,7 @@ set(CF_CORE_SOURCES
     data_structures.c
     octree.c
     version.c
+    lod_generator.c
 )
 
 set(CF_CORE_HEADERS

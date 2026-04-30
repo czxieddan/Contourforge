@@ -57,6 +57,17 @@ cf_result_t cf_renderer_init(
 );
 
 /**
+ * @brief 设置着色器
+ * @param renderer 渲染器
+ * @param shader 着色器
+ * @return 返回码
+ */
+cf_result_t cf_renderer_set_shader(
+    cf_renderer_t* renderer,
+    cf_shader_t* shader
+);
+
+/**
  * @brief 设置模型
  * @param renderer 渲染器
  * @param model 模型
@@ -65,6 +76,37 @@ cf_result_t cf_renderer_init(
 cf_result_t cf_renderer_set_model(
     cf_renderer_t* renderer,
     cf_model_t* model
+);
+
+/**
+ * @brief 设置LOD模型
+ * @param renderer 渲染器
+ * @param lod_model LOD模型
+ * @return 返回码
+ */
+cf_result_t cf_renderer_set_lod_model(
+    cf_renderer_t* renderer,
+    cf_lod_model_t* lod_model
+);
+
+/**
+ * @brief 启用/禁用自动LOD选择
+ * @param renderer 渲染器
+ * @param enable 是否启用
+ */
+void cf_renderer_set_auto_lod(
+    cf_renderer_t* renderer,
+    bool enable
+);
+
+/**
+ * @brief 设置LOD调试模式
+ * @param renderer 渲染器
+ * @param enable 是否启用（显示当前LOD层级）
+ */
+void cf_renderer_set_lod_debug(
+    cf_renderer_t* renderer,
+    bool enable
 );
 
 /**
@@ -195,6 +237,20 @@ void cf_camera_set_position(cf_camera_t* camera, cf_point3_t position);
 void cf_camera_set_target(cf_camera_t* camera, cf_point3_t target);
 
 /**
+ * @brief 获取相机位置
+ * @param camera 相机
+ * @return 相机位置
+ */
+cf_point3_t cf_camera_get_position(const cf_camera_t* camera);
+
+/**
+ * @brief 获取相机目标
+ * @param camera 相机
+ * @return 相机目标点
+ */
+cf_point3_t cf_camera_get_target(const cf_camera_t* camera);
+
+/**
  * @brief 获取视图矩阵
  * @param camera 相机
  * @return 视图矩阵指针（4x4）
@@ -207,6 +263,21 @@ const float* cf_camera_get_view_matrix(const cf_camera_t* camera);
  * @return 投影矩阵指针（4x4）
  */
 const float* cf_camera_get_projection_matrix(const cf_camera_t* camera);
+
+/**
+ * @brief 相机环绕目标旋转
+ * @param camera 相机
+ * @param delta_yaw 偏航角变化（弧度）
+ * @param delta_pitch 俯仰角变化（弧度）
+ */
+void cf_camera_orbit(cf_camera_t* camera, float delta_yaw, float delta_pitch);
+
+/**
+ * @brief 相机缩放（改变距离）
+ * @param camera 相机
+ * @param delta 缩放增量（负值拉近，正值推远）
+ */
+void cf_camera_zoom(cf_camera_t* camera, float delta);
 
 /**
  * @brief 销毁相机

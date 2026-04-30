@@ -180,6 +180,20 @@ cf_result_t cf_model_create(const char* name, cf_model_t** model);
 void cf_model_update_bounds(cf_model_t* model);
 
 /**
+ * @brief 获取模型中心点
+ * @param model 模型
+ * @return 中心点
+ */
+cf_point3_t cf_model_get_center(const cf_model_t* model);
+
+/**
+ * @brief 获取模型尺寸
+ * @param model 模型
+ * @return 尺寸向量
+ */
+cf_vec3_t cf_model_get_size(const cf_model_t* model);
+
+/**
  * @brief 销毁模型
  * @param model 模型
  */
@@ -250,6 +264,118 @@ cf_result_t cf_octree_query(
  * @param octree 八叉树
  */
 void cf_octree_destroy(cf_octree_t* octree);
+
+/* ========== LOD系统 ========== */
+
+/**
+ * @brief LOD层级
+ */
+typedef struct {
+    cf_index_t* point_indices;      /**< 点索引数组 */
+    size_t point_count;             /**< 点数量 */
+    cf_index_t* line_indices;       /**< 线索引数组（成对） */
+    size_t line_count;              /**< 线段数量 */
+    float distance_threshold;       /**< 距离阈值 */
+    float simplification_ratio;     /**< 简化率 */
+} cf_lod_level_t;
+
+/**
+ * @brief LOD模型
+ */
+typedef struct {
+    cf_model_t* base_model;         /**< 基础模型 */
+    cf_lod_level_t* levels;         /**< LOD层级数组 */
+    size_t level_count;             /**< 层级数量 */
+    int current_level;              /**< 当前使用的层级 */
+} cf_lod_model_t;
+
+/**
+ * @brief LOD配置
+ */
+typedef struct {
+    size_t level_count;             /**< LOD层级数量 */
+    float* distance_thresholds;     /**< 距离阈值数组 */
+    float* simplification_ratios;   /**< 简化率数组 */
+    bool preserve_boundaries;       /**< 是否保护边界 */
+    bool use_importance_sampling;   /**< 是否使用重要性采样 */
+} cf_lod_config_t;
+
+/**
+ * @brief LOD统计信息
+ */
+typedef struct {
+    size_t original_point_count;    /**< 原始点数量 */
+    size_t original_line_count;     /**< 原始线段数量 */
+    size_t* level_point_counts;     /**< 各层级点数量 */
+    size_t* level_line_counts;      /**< 各层级线段数量 */
+    float* reduction_ratios;        /**< 各层级简化率 */
+    size_t total_memory_bytes;      /**< 总内存占用 */
+} cf_lod_stats_t;
+
+/**
+ * @brief 创建LOD模型
+ * @param base_model 基础模型
+ * @param config LOD配置
+ * @param lod_model 输出LOD模型指针
+ * @return 返回码
+ */
+cf_result_t cf_lod_create(
+    cf_model_t* base_model,
+    const cf_lod_config_t* config,
+    cf_lod_model_t** lod_model
+);
+
+/**
+ * @brief 根据距离选择LOD层级
+ * @param lod_model LOD模型
+ * @param distance 相机到模型的距离
+ * @return LOD层级索引
+ */
+int cf_lod_select_level(
+    const cf_lod_model_t* lod_model,
+    float distance
+);
+
+/**
+ * @brief 设置当前LOD层级
+ * @param lod_model LOD模型
+ * @param level 层级索引
+ * @return 返回码
+ */
+cf_result_t cf_lod_set_level(
+    cf_lod_model_t* lod_model,
+    int level
+);
+
+/**
+ * @brief 获取当前LOD层级
+ * @param lod_model LOD模型
+ * @return 当前层级索引
+ */
+int cf_lod_get_current_level(const cf_lod_model_t* lod_model);
+
+/**
+ * @brief 获取LOD统计信息
+ * @param lod_model LOD模型
+ * @param stats 输出统计信息
+ * @return 返回码
+ */
+cf_result_t cf_lod_get_stats(
+    const cf_lod_model_t* lod_model,
+    cf_lod_stats_t* stats
+);
+
+/**
+ * @brief 销毁LOD统计信息
+ * @param stats 统计信息
+ */
+void cf_lod_stats_destroy(cf_lod_stats_t* stats);
+
+/**
+ * @brief 销毁LOD模型
+ * @param lod_model LOD模型
+ */
+void cf_lod_destroy(cf_lod_model_t* lod_model);
 
 #ifdef __cplusplus
 }

@@ -268,3 +268,144 @@ void cf_mesh_destroy(cf_mesh_t* mesh) {
     
     free(mesh);
 }
+
+/* ========== LOD网格API ========== */
+
+/**
+ * @brief 从LOD点创建网格
+ */
+cf_result_t cf_mesh_create_from_lod_points(
+    cf_model_t* model,
+    const cf_index_t* point_indices,
+    size_t point_count,
+    cf_mesh_t** mesh
+) {
+    if (model == NULL || model->points == NULL ||
+        point_indices == NULL || point_count == 0 || mesh == NULL) {
+        return CF_ERROR_INVALID_PARAM;
+    }
+    
+    cf_mesh_t* m = (cf_mesh_t*)malloc(sizeof(cf_mesh_t));
+    if (m == NULL) {
+        return CF_ERROR_OUT_OF_MEMORY;
+    }
+    
+    m->model = model;
+    m->vertex_count = point_count;
+    m->index_count = 0;
+    m->use_indices = false;
+    m->dirty = false;
+    
+    /* 提取LOD点 */
+    cf_point3_t* lod_points = (cf_point3_t*)malloc(sizeof(cf_point3_t) * point_count);
+    if (lod_points == NULL) {
+        free(m);
+        return CF_ERROR_OUT_OF_MEMORY;
+    }
+    
+    for (size_t i = 0; i < point_count; i++) {
+        lod_points[i] = model->points->points[point_indices[i]];
+    }
+    
+    /* 创建VAO */
+    glGenVertexArrays(1, &m->vao);
+    glBindVertexArray(m->vao);
+    
+    /* 创建VBO */
+    glGenBuffers(1, &m->vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m->vbo);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sizeof(cf_point3_t) * point_count,
+        lod_points,
+        GL_STATIC_DRAW
+    );
+    
+    free(lod_points);
+    
+    /* 设置顶点属性 */
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(cf_point3_t), (void*)0);
+    
+    glBindVertexArray(0);
+    
+    m->ebo = 0;
+    
+    *mesh = m;
+    return CF_SUCCESS;
+}
+
+/**
+ * @brief 从LOD线创建网格
+ */
+cf_result_t cf_mesh_create_from_lod_lines(
+    cf_model_t* model,
+    const cf_index_t* point_indices,
+    size_t point_count,
+    const cf_index_t* line_indices,
+    size_t line_count,
+    cf_mesh_t** mesh
+) {
+    if (model == NULL || model->points == NULL ||
+        point_indices == NULL || point_count == 0 ||
+        line_indices == NULL || line_count == 0 || mesh == NULL) {
+        return CF_ERROR_INVALID_PARAM;
+    }
+    
+    cf_mesh_t* m = (cf_mesh_t*)malloc(sizeof(cf_mesh_t));
+    if (m == NULL) {
+        return CF_ERROR_OUT_OF_MEMORY;
+    }
+    
+    m->model = model;
+    m->vertex_count = point_count;
+    m->index_count = line_count * 2;
+    m->use_indices = true;
+    m->dirty = false;
+    
+    /* 提取LOD点 */
+    cf_point3_t* lod_points = (cf_point3_t*)malloc(sizeof(cf_point3_t) * point_count);
+    if (lod_points == NULL) {
+        free(m);
+        return CF_ERROR_OUT_OF_MEMORY;
+    }
+    
+    for (size_t i = 0; i < point_count; i++) {
+        lod_points[i] = model->points->points[point_indices[i]];
+    }
+    
+    /* 创建VAO */
+    glGenVertexArrays(1, &m->vao);
+    glBindVertexArray(m->vao);
+    
+    /* 创建VBO */
+    glGenBuffers(1, &m->vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m->vbo);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sizeof(cf_point3_t) * point_count,
+        lod_points,
+        GL_STATIC_DRAW
+    );
+    
+    free(lod_points);
+    
+    /* 设置顶点属性 */
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(cf_point3_t), (void*)0);
+    
+    /* 创建EBO（line_indices已经是正确的格式） */
+    glGenBuffers(1, &m->ebo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->ebo);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        sizeof(cf_index_t) * line_count * 2,
+        line_indices,
+        GL_STATIC_DRAW
+    );
+    
+    glBindVertexArray(0);
+    
+    *mesh = m;
+    return CF_SUCCESS;
+}

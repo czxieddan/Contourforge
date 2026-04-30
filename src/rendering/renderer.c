@@ -18,6 +18,20 @@
 typedef struct cf_mesh cf_mesh_t;
 cf_result_t cf_mesh_create_from_points(cf_model_t* model, cf_mesh_t** mesh);
 cf_result_t cf_mesh_create_from_lines(cf_model_t* model, cf_mesh_t** mesh);
+cf_result_t cf_mesh_create_from_lod_points(
+    cf_model_t* model,
+    const cf_index_t* point_indices,
+    size_t point_count,
+    cf_mesh_t** mesh
+);
+cf_result_t cf_mesh_create_from_lod_lines(
+    cf_model_t* model,
+    const cf_index_t* point_indices,
+    size_t point_count,
+    const cf_index_t* line_indices,
+    size_t line_count,
+    cf_mesh_t** mesh
+);
 void cf_mesh_draw_points(const cf_mesh_t* mesh);
 void cf_mesh_draw_lines(const cf_mesh_t* mesh);
 void cf_mesh_destroy(cf_mesh_t* mesh);
@@ -32,12 +46,15 @@ struct cf_renderer {
     cf_camera_t* camera;        /**< 相机 */
     cf_shader_t* shader;        /**< 着色器 */
     cf_model_t* model;          /**< 当前模型 */
+    cf_lod_model_t* lod_model;  /**< LOD模型 */
     
     int width;                  /**< 窗口宽度 */
     int height;                 /**< 窗口高度 */
     
     cf_color_t clear_color;     /**< 清屏颜色 */
     
+    bool auto_lod;              /**< 自动LOD选择 */
+    bool lod_debug;             /**< LOD调试模式 */
     bool initialized;           /**< 是否已初始化 */
 };
 
@@ -202,7 +219,46 @@ cf_result_t cf_renderer_set_model(cf_renderer_t* renderer, cf_model_t* model) {
     }
     
     renderer->model = model;
+    renderer->lod_model = NULL;  /* 清除LOD模型 */
     return CF_SUCCESS;
+}
+
+/**
+ * @brief 设置LOD模型
+ */
+cf_result_t cf_renderer_set_lod_model(
+    cf_renderer_t* renderer,
+    cf_lod_model_t* lod_model
+) {
+    if (renderer == NULL) {
+        return CF_ERROR_INVALID_PARAM;
+    }
+    
+    renderer->lod_model = lod_model;
+    renderer->model = NULL;  /* 清除普通模型 */
+    return CF_SUCCESS;
+}
+
+/**
+ * @brief 启用/禁用自动LOD选择
+ */
+void cf_renderer_set_auto_lod(cf_renderer_t* renderer, bool enable) {
+    if (renderer == NULL) {
+        return;
+    }
+    
+    renderer->auto_lod = enable;
+}
+
+/**
+ * @brief 设置LOD调试模式
+ */
+void cf_renderer_set_lod_debug(cf_renderer_t* renderer, bool enable) {
+    if (renderer == NULL) {
+        return;
+    }
+    
+    renderer->lod_debug = enable;
 }
 
 /**
@@ -237,6 +293,90 @@ cf_result_t cf_renderer_begin_frame(cf_renderer_t* renderer) {
 }
 
 /**
+ * @brief 计算相机到模型的距离
+ */
+static float calculate_camera_distance(
+    const cf_camera_t* camera,
+    const cf_model_t* model
+) {
+    cf_point3_t cam_pos = cf_camera_get_position(camera);
+    cf_point3_t model_center = cf_model_get_center(model);
+    
+    float dx = cam_pos.x - model_center.x;
+    float dy = cam_pos.y - model_center.y;
+    float dz = cam_pos.z - model_center.z;
+    
+    return sqrtf(dx * dx + dy * dy + dz * dz);
+}
+
+/**
+ * @brief 渲染LOD模型
+ */
+static cf_result_t render_lod_model(cf_renderer_t* renderer) {
+    if (renderer->lod_model == NULL) {
+        return CF_SUCCESS;
+    }
+    
+    cf_lod_model_t* lod = renderer->lod_model;
+    
+    /* 自动选择LOD层级 */
+    if (renderer->auto_lod) {
+        float distance = calculate_camera_distance(
+            renderer->camera,
+            lod->base_model
+        );
+        int level = cf_lod_select_level(lod, distance);
+        cf_lod_set_level(lod, level);
+    }
+    
+    int current_level = cf_lod_get_current_level(lod);
+    if (current_level < 0 || current_level >= (int)lod->level_count) {
+        return CF_ERROR_INVALID_PARAM;
+    }
+    
+    const cf_lod_level_t* level = &lod->levels[current_level];
+    
+    /* 创建临时网格并渲染 */
+    cf_mesh_t* mesh = NULL;
+    
+    if (level->line_count > 0) {
+        /* 渲染线（使用LOD层级的索引） */
+        if (cf_mesh_create_from_lod_lines(
+            lod->base_model,
+            level->point_indices,
+            level->point_count,
+            level->line_indices,
+            level->line_count,
+            &mesh
+        ) == CF_SUCCESS) {
+            glLineWidth(2.0f);
+            cf_mesh_draw_lines(mesh);
+            cf_mesh_destroy(mesh);
+        }
+    } else if (level->point_count > 0) {
+        /* 渲染点（使用LOD层级的索引） */
+        if (cf_mesh_create_from_lod_points(
+            lod->base_model,
+            level->point_indices,
+            level->point_count,
+            &mesh
+        ) == CF_SUCCESS) {
+            glPointSize(3.0f);
+            cf_mesh_draw_points(mesh);
+            cf_mesh_destroy(mesh);
+        }
+    }
+    
+    /* LOD调试信息 */
+    if (renderer->lod_debug) {
+        /* TODO: 在屏幕上显示当前LOD层级信息 */
+        /* 可以使用文本渲染或简单的颜色编码 */
+    }
+    
+    return CF_SUCCESS;
+}
+
+/**
  * @brief 渲染
  */
 cf_result_t cf_renderer_render(cf_renderer_t* renderer) {
@@ -244,8 +384,8 @@ cf_result_t cf_renderer_render(cf_renderer_t* renderer) {
         return CF_ERROR_NOT_INITIALIZED;
     }
     
-    if (renderer->model == NULL || renderer->shader == NULL) {
-        return CF_SUCCESS;  /* 没有内容可渲染 */
+    if (renderer->shader == NULL) {
+        return CF_SUCCESS;  /* 没有着色器 */
     }
     
     /* 使用着色器 */
@@ -258,22 +398,27 @@ cf_result_t cf_renderer_render(cf_renderer_t* renderer) {
     cf_shader_set_mat4(renderer->shader, "view", view);
     cf_shader_set_mat4(renderer->shader, "projection", proj);
     
-    /* 创建临时网格并渲染 */
-    cf_mesh_t* mesh = NULL;
-    
-    if (renderer->model->lines != NULL && renderer->model->lines->count > 0) {
-        /* 渲染线 */
-        if (cf_mesh_create_from_lines(renderer->model, &mesh) == CF_SUCCESS) {
-            glLineWidth(2.0f);
-            cf_mesh_draw_lines(mesh);
-            cf_mesh_destroy(mesh);
-        }
-    } else if (renderer->model->points != NULL && renderer->model->points->count > 0) {
-        /* 渲染点 */
-        if (cf_mesh_create_from_points(renderer->model, &mesh) == CF_SUCCESS) {
-            glPointSize(3.0f);
-            cf_mesh_draw_points(mesh);
-            cf_mesh_destroy(mesh);
+    /* 渲染LOD模型或普通模型 */
+    if (renderer->lod_model != NULL) {
+        return render_lod_model(renderer);
+    } else if (renderer->model != NULL) {
+        /* 创建临时网格并渲染 */
+        cf_mesh_t* mesh = NULL;
+        
+        if (renderer->model->lines != NULL && renderer->model->lines->count > 0) {
+            /* 渲染线 */
+            if (cf_mesh_create_from_lines(renderer->model, &mesh) == CF_SUCCESS) {
+                glLineWidth(2.0f);
+                cf_mesh_draw_lines(mesh);
+                cf_mesh_destroy(mesh);
+            }
+        } else if (renderer->model->points != NULL && renderer->model->points->count > 0) {
+            /* 渲染点 */
+            if (cf_mesh_create_from_points(renderer->model, &mesh) == CF_SUCCESS) {
+                glPointSize(3.0f);
+                cf_mesh_draw_points(mesh);
+                cf_mesh_destroy(mesh);
+            }
         }
     }
     

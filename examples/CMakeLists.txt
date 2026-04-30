@@ -28,6 +28,15 @@ target_link_libraries(interactive_editor
     glfw
 )
 
+# LOD演示
+add_executable(lod_demo lod_demo.c)
+target_link_libraries(lod_demo
+    cf_core
+    cf_rendering
+    cf_datagen
+    glfw
+)
+
 # 复制着色器文件到构建目录
 add_custom_command(TARGET simple_viewer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -43,7 +52,14 @@ add_custom_command(TARGET interactive_editor POST_BUILD
     COMMENT "Copying shaders to build directory"
 )
 
+add_custom_command(TARGET lod_demo POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/shaders
+    $<TARGET_FILE_DIR:lod_demo>/shaders
+    COMMENT "Copying shaders to build directory"
+)
+
 # 安装示例程序
-install(TARGETS simple_viewer heightmap_loader interactive_editor
+install(TARGETS simple_viewer heightmap_loader interactive_editor lod_demo
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/examples
 )
