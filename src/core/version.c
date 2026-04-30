@@ -26,6 +26,13 @@ const char* cf_get_version_string(void) {
 }
 
 /**
+ * @brief 获取版本字符串（别名）
+ */
+const char* cf_get_version(void) {
+    return cf_get_version_string();
+}
+
+/**
  * @brief 获取主版本号
  */
 int cf_get_version_major(void) {

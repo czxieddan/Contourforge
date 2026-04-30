@@ -6,6 +6,7 @@ target_link_libraries(simple_viewer
     cf_core
     cf_rendering
     cf_datagen
+    glfw
 )
 
 # 高度图加载器
@@ -13,6 +14,8 @@ add_executable(heightmap_loader heightmap_loader.c)
 target_link_libraries(heightmap_loader
     cf_core
     cf_datagen
+    cf_rendering
+    glfw
 )
 
 # 交互编辑器
@@ -22,6 +25,7 @@ target_link_libraries(interactive_editor
     cf_rendering
     cf_datagen
     cf_control
+    glfw
 )
 
 # 复制着色器文件到构建目录
