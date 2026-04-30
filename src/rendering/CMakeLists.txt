@@ -23,9 +23,8 @@ target_link_libraries(cf_rendering
     PUBLIC
         cf_core
         OpenGL::GL
-    # TODO: 添加GLFW和cglm链接
-    # glfw
-    # cglm
+        glfw
+        glad
 )
 
 # 包含目录
@@ -35,7 +34,7 @@ target_include_directories(cf_rendering
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
-    # TODO: 添加第三方库包含目录
+        ${CMAKE_SOURCE_DIR}/third_party/glad/include
 )
 
 # 设置库属性
@@ -44,6 +43,7 @@ set_target_properties(cf_rendering PROPERTIES
     SOVERSION 1
     OUTPUT_NAME "contourforge_rendering"
     PUBLIC_HEADER "${CMAKE_SOURCE_DIR}/include/contourforge/rendering.h"
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
 # Windows特定设置

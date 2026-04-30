@@ -25,7 +25,6 @@
 - 🧩 **模块化**: 独立的渲染、数据生成、交互控制库
 - 🌍 **跨平台**: Windows、Linux、macOS全支持
 - 🎯 **易用**: 简洁的C语言API
-- 📦 **开源**: MIT许可证，商业友好
 
 ### 🎯 应用场景
 
@@ -297,31 +296,20 @@ ctest -V
 
 ## 📄 许可证
 
-本项目采用 [MIT License](LICENSE) 开源许可证。
+本项目采用 **GNU Affero General Public License v3.0 (AGPL-3.0)** 许可证。
 
-```
-MIT License
+这意味着：
+- ✅ 您可以自由使用、修改和分发本软件
+- ✅ 您可以将本软件用于商业目的
+- ⚠️ 如果您修改了本软件并通过网络提供服务，您必须公开修改后的源代码
+- ⚠️ 任何基于本软件的衍生作品也必须使用AGPL-3.0许可证
 
-Copyright (c) 2026 Contourforge Project
+详细许可证条款请参见 [LICENSE](LICENSE) 文件。
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
+**第三方依赖许可证：**
+- GLFW: zlib/libpng License
+- glad: MIT/Public Domain
+- 其他依赖详见 [third_party/README.md](third_party/README.md)
 
 ---
 

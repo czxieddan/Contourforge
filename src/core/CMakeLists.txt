@@ -33,6 +33,7 @@ set_target_properties(cf_core PROPERTIES
     SOVERSION 1
     OUTPUT_NAME "contourforge_core"
     PUBLIC_HEADER "${CMAKE_SOURCE_DIR}/include/contourforge/core.h;${CMAKE_SOURCE_DIR}/include/contourforge/types.h"
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
 )
 
 # Windows特定设置

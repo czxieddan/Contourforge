@@ -74,15 +74,15 @@ endif()
 # 查找OpenGL
 find_package(OpenGL REQUIRED)
 
-# TODO: 添加第三方库（GLFW, cglm等）
-# 这些库需要通过以下方式之一添加：
-# 1. Git submodules: git submodule add <url> third_party/<name>
-# 2. FetchContent: 自动下载
-# 3. find_package: 使用系统安装的库
+# 添加GLFW
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(third_party/glfw)
 
-# 示例：如果使用子模块
-# add_subdirectory(third_party/glfw)
-# add_subdirectory(third_party/cglm)
+# 添加glad（header-only）
+add_library(glad INTERFACE)
+target_include_directories(glad INTERFACE third_party/glad/include)
 
 # 单头文件库路径
 set(STB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/third_party/stb)

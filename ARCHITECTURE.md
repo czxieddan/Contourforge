@@ -657,7 +657,9 @@ Offset | Size | Field
 
 ## 13. 许可证
 
-**MIT License** - 商业友好的开源许可证
+**GNU Affero General Public License v3.0 (AGPL-3.0)** - 强Copyleft开源许可证
+
+本项目采用AGPL-3.0许可证，要求任何基于本项目的网络服务也必须开源。详见LICENSE文件。
 
 ---
 
