@@ -1,0 +1,172 @@
+# Build directories
+build/
+build-*/
+cmake-build-*/
+out/
+bin/
+lib/
+*.dir/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+_deps/
+
+# Compiled Object files
+*.o
+*.obj
+*.lo
+*.slo
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.so.*
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+*.la
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Visual Studio
+.vs/
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.sln
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.opendb
+ipch/
+*.opensdf
+*.sdf
+*.cachefile
+*.aps
+*.ncb
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# CLion
+.idea/
+cmake-build-*/
+
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.directory
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Logs
+*.log
+log/
+logs/
+
+# Documentation
+docs/html/
+docs/latex/
+docs/xml/
+Doxyfile.bak
+
+# Test results
+Testing/
+test_results/
+*.gcda
+*.gcno
+*.gcov
+
+# Profiling
+*.prof
+gmon.out
+callgrind.out.*
+perf.data
+
+# Valgrind
+vgcore.*
+*.memcheck
+
+# Package files
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# CPack
+_CPack_Packages/
+*.deb
+*.rpm
+*.dmg
+*.msi
+
+# Backup files
+*.bak
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Generated files
+version.h
+config.h
+
+# Data files (large test data)
+data/large/
+*.raw
+*.bin
+
+# Screenshots
+screenshots/
+recordings/
+
+# Exceptions (keep these)
+!data/heightmaps/*.png
+!docs/images/*.png
+!docs/images/*.jpg
+
+# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+
+# Editor configs (keep)
+!.editorconfig
