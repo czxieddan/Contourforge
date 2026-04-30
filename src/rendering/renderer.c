@@ -339,12 +339,12 @@ void cf_renderer_get_size(const cf_renderer_t* renderer, int* width, int* height
 /**
  * @brief 获取GLFW窗口
  */
-GLFWwindow* cf_renderer_get_window(cf_renderer_t* renderer) {
+void* cf_renderer_get_window(const cf_renderer_t* renderer) {
     if (renderer == NULL) {
         return NULL;
     }
     
-    return renderer->window;
+    return (void*)renderer->window;
 }
 
 /**

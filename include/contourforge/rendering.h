@@ -14,12 +14,24 @@
 extern "C" {
 #endif
 
-/* ========== 渲染器 ========== */
+/* ========== 前向声明 ========== */
 
 /**
  * @brief 渲染器句柄
  */
 typedef struct cf_renderer cf_renderer_t;
+
+/**
+ * @brief 相机句柄
+ */
+typedef struct cf_camera cf_camera_t;
+
+/**
+ * @brief 着色器句柄
+ */
+typedef struct cf_shader cf_shader_t;
+
+/* ========== 渲染器 ========== */
 
 /**
  * @brief 渲染器配置
@@ -84,17 +96,34 @@ cf_result_t cf_renderer_end_frame(cf_renderer_t* renderer);
 bool cf_renderer_should_close(const cf_renderer_t* renderer);
 
 /**
+ * @brief 获取GLFW窗口句柄（内部使用）
+ * @param renderer 渲染器
+ * @return 窗口句柄
+ */
+void* cf_renderer_get_window(const cf_renderer_t* renderer);
+
+/**
+ * @brief 获取渲染器的相机
+ * @param renderer 渲染器
+ * @return 相机指针
+ */
+cf_camera_t* cf_renderer_get_camera(cf_renderer_t* renderer);
+
+/**
+ * @brief 获取窗口尺寸
+ * @param renderer 渲染器
+ * @param width 输出宽度
+ * @param height 输出高度
+ */
+void cf_renderer_get_size(const cf_renderer_t* renderer, int* width, int* height);
+
+/**
  * @brief 销毁渲染器
  * @param renderer 渲染器
  */
 void cf_renderer_destroy(cf_renderer_t* renderer);
 
 /* ========== 相机 ========== */
-
-/**
- * @brief 相机句柄
- */
-typedef struct cf_camera cf_camera_t;
 
 /**
  * @brief 相机类型
@@ -186,11 +215,6 @@ const float* cf_camera_get_projection_matrix(const cf_camera_t* camera);
 void cf_camera_destroy(cf_camera_t* camera);
 
 /* ========== 着色器 ========== */
-
-/**
- * @brief 着色器句柄
- */
-typedef struct cf_shader cf_shader_t;
 
 /**
  * @brief 加载着色器
