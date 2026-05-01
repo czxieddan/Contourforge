@@ -168,5 +168,9 @@ __pycache__/
 venv/
 env/
 
+# Font archives
+data/fonts/*.zip
+data/fonts/__MACOSX/
+
 # Editor configs (keep)
 !.editorconfig

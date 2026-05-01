@@ -37,6 +37,15 @@ target_link_libraries(lod_demo
     glfw
 )
 
+# 标注演示
+add_executable(label_demo label_demo.c)
+target_link_libraries(label_demo
+    cf_core
+    cf_rendering
+    cf_datagen
+    glfw
+)
+
 # 复制着色器文件到构建目录
 add_custom_command(TARGET simple_viewer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -59,6 +68,16 @@ add_custom_command(TARGET lod_demo POST_BUILD
     COMMENT "Copying shaders to build directory"
 )
 
+add_custom_command(TARGET label_demo POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/shaders
+    $<TARGET_FILE_DIR:label_demo>/shaders
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/data
+    $<TARGET_FILE_DIR:label_demo>/data
+    COMMENT "Copying shaders and data to build directory"
+)
+
 # 多线程性能测试
 add_executable(threading_benchmark threading_benchmark.c)
 target_link_libraries(threading_benchmark
@@ -77,6 +96,6 @@ target_link_libraries(format_converter
 )
 
 # 安装示例程序
-install(TARGETS simple_viewer heightmap_loader interactive_editor lod_demo threading_benchmark format_converter
+install(TARGETS simple_viewer heightmap_loader interactive_editor lod_demo label_demo threading_benchmark format_converter
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/examples
 )

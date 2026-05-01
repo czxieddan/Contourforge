@@ -31,6 +31,26 @@ typedef struct cf_camera cf_camera_t;
  */
 typedef struct cf_shader cf_shader_t;
 
+/**
+ * @brief 字体句柄
+ */
+typedef struct cf_font cf_font_t;
+
+/**
+ * @brief 文字渲染器句柄
+ */
+typedef struct cf_text_renderer cf_text_renderer_t;
+
+/**
+ * @brief 标注句柄
+ */
+typedef struct cf_label cf_label_t;
+
+/**
+ * @brief 标注管理器句柄
+ */
+typedef struct cf_label_manager cf_label_manager_t;
+
 /* ========== 渲染器 ========== */
 
 /**
@@ -335,6 +355,148 @@ void cf_shader_set_mat4(cf_shader_t* shader, const char* name, const float* matr
  * @param shader 着色器
  */
 void cf_shader_destroy(cf_shader_t* shader);
+
+/* ========== 文字渲染 ========== */
+
+/**
+ * @brief 加载字体
+ * @param font_path 字体文件路径（TTF格式）
+ * @param size 字体大小（像素）
+ * @param font 输出字体指针
+ * @return 返回码
+ */
+cf_result_t cf_font_load(const char* font_path, float size, cf_font_t** font);
+
+/**
+ * @brief 销毁字体
+ * @param font 字体
+ */
+void cf_font_destroy(cf_font_t* font);
+
+/**
+ * @brief 创建文字渲染器
+ * @param font 字体
+ * @param shader 文字着色器
+ * @param renderer 输出渲染器指针
+ * @return 返回码
+ */
+cf_result_t cf_text_renderer_create(
+    cf_font_t* font,
+    cf_shader_t* shader,
+    cf_text_renderer_t** renderer
+);
+
+/**
+ * @brief 渲染3D文字（Billboard效果）
+ * @param renderer 文字渲染器
+ * @param text 文字内容
+ * @param position 3D位置
+ * @param color 颜色
+ * @param view_matrix 视图矩阵
+ * @param projection_matrix 投影矩阵
+ * @return 返回码
+ */
+cf_result_t cf_text_renderer_render_3d(
+    cf_text_renderer_t* renderer,
+    const char* text,
+    cf_point3_t position,
+    cf_color_t color,
+    const float* view_matrix,
+    const float* projection_matrix
+);
+
+/**
+ * @brief 计算文字宽度
+ * @param renderer 文字渲染器
+ * @param text 文字内容
+ * @return 文字宽度（像素）
+ */
+float cf_text_renderer_measure_width(cf_text_renderer_t* renderer, const char* text);
+
+/**
+ * @brief 销毁文字渲染器
+ * @param renderer 文字渲染器
+ */
+void cf_text_renderer_destroy(cf_text_renderer_t* renderer);
+
+/* ========== 标注系统 ========== */
+
+/**
+ * @brief 标注配置
+ */
+typedef struct {
+    float spacing;          /**< 标注间距（米） */
+    float min_distance;     /**< 最小显示距离 */
+    float max_distance;     /**< 最大显示距离 */
+    int lod_levels;         /**< LOD层级数 */
+    char unit[16];          /**< 单位（"m", "ft"等） */
+    int decimal_places;     /**< 小数位数 */
+    cf_color_t color;       /**< 标注颜色 */
+    float size;             /**< 字体大小 */
+    bool show_index;        /**< 是否显示等高线索引 */
+} cf_label_config_t;
+
+/**
+ * @brief 创建标注管理器
+ * @param text_renderer 文字渲染器
+ * @param config 标注配置
+ * @param manager 输出管理器指针
+ * @return 返回码
+ */
+cf_result_t cf_label_manager_create(
+    cf_text_renderer_t* text_renderer,
+    const cf_label_config_t* config,
+    cf_label_manager_t** manager
+);
+
+/**
+ * @brief 为等高线生成标注
+ * @param manager 标注管理器
+ * @param model 等高线模型
+ * @param camera 相机（用于LOD计算）
+ * @return 返回码
+ */
+cf_result_t cf_label_manager_generate_labels(
+    cf_label_manager_t* manager,
+    cf_model_t* model,
+    cf_camera_t* camera
+);
+
+/**
+ * @brief 更新标注（相机变化时调用）
+ * @param manager 标注管理器
+ * @param camera 相机
+ * @return 返回码
+ */
+cf_result_t cf_label_manager_update(
+    cf_label_manager_t* manager,
+    cf_camera_t* camera
+);
+
+/**
+ * @brief 渲染标注
+ * @param manager 标注管理器
+ * @param view_matrix 视图矩阵
+ * @param projection_matrix 投影矩阵
+ * @return 返回码
+ */
+cf_result_t cf_label_manager_render(
+    cf_label_manager_t* manager,
+    const float* view_matrix,
+    const float* projection_matrix
+);
+
+/**
+ * @brief 清除所有标注
+ * @param manager 标注管理器
+ */
+void cf_label_manager_clear(cf_label_manager_t* manager);
+
+/**
+ * @brief 销毁标注管理器
+ * @param manager 标注管理器
+ */
+void cf_label_manager_destroy(cf_label_manager_t* manager);
 
 #ifdef __cplusplus
 }

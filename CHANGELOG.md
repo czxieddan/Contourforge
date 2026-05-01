@@ -25,6 +25,14 @@
 
 ### 新增
 
+#### 等高线标注系统
+- ✅ 3D文字渲染（Billboard效果）
+- ✅ TrueType字体支持（stb_truetype）
+- ✅ 自动标注放置算法
+- ✅ 标注LOD系统（距离自适应）
+- ✅ 碰撞检测（避免标注重叠）
+- ✅ 可配置标注样式（颜色、大小、单位）
+
 #### 多格式支持
 - ✅ TIFF格式加载（8/16/32位）
 - ✅ GeoTIFF格式识别
@@ -33,6 +41,23 @@
 - ✅ 统一加载接口
 
 #### 新增API
+
+**标注系统**
+- ✅ `cf_font_load()` - 加载TrueType字体
+- ✅ `cf_font_destroy()` - 销毁字体
+- ✅ `cf_text_renderer_create()` - 创建文字渲染器
+- ✅ `cf_text_renderer_render_3d()` - 渲染3D文字
+- ✅ `cf_text_renderer_measure_width()` - 测量文字宽度
+- ✅ `cf_text_renderer_destroy()` - 销毁文字渲染器
+- ✅ `cf_label_manager_create()` - 创建标注管理器
+- ✅ `cf_label_manager_generate_labels()` - 生成标注
+- ✅ `cf_label_manager_update()` - 更新标注
+- ✅ `cf_label_manager_render()` - 渲染标注
+- ✅ `cf_label_manager_clear()` - 清除标注
+- ✅ `cf_label_manager_destroy()` - 销毁标注管理器
+- ✅ 标注配置结构 `cf_label_config_t`
+
+**格式支持**
 - ✅ `cf_heightmap_detect_format()` - 检测文件格式
 - ✅ `cf_heightmap_format_name()` - 获取格式名称
 - ✅ `cf_heightmap_load_tiff()` - 加载TIFF文件
@@ -42,10 +67,17 @@
 - ✅ 地理元数据结构 `cf_geo_metadata_t`（预留）
 
 #### 第三方库
+- ✅ stb_truetype.h - TrueType字体渲染库（单头文件）
 - ✅ tinytiffreader.h - 轻量级TIFF读取库（单头文件）
+- ✅ Roboto字体 - 开源默认字体（Apache License 2.0）
 - ✅ 无需外部依赖，开箱即用
 
 #### 示例程序
+- ✅ `label_demo.c` - 标注系统演示
+  - 交互式标注显示
+  - 标注开关切换
+  - LOD动态调整
+  - 相机控制
 - ✅ `format_converter.c` - 格式转换和信息查看工具
   - 显示高度图详细信息
   - 格式转换（RAW导出）

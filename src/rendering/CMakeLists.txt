@@ -5,6 +5,9 @@ set(CF_RENDERING_SOURCES
     camera.c
     mesh.c
     buffer.c
+    text_renderer.c
+    label.c
+    label_placement.c
 )
 
 set(CF_RENDERING_HEADERS
@@ -35,6 +38,7 @@ target_include_directories(cf_rendering
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/third_party/glad/include
+        ${CMAKE_SOURCE_DIR}/third_party/stb
 )
 
 # 设置库属性
