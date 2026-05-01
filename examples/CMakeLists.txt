@@ -59,7 +59,17 @@ add_custom_command(TARGET lod_demo POST_BUILD
     COMMENT "Copying shaders to build directory"
 )
 
+# 多线程性能测试
+add_executable(threading_benchmark threading_benchmark.c)
+target_link_libraries(threading_benchmark
+    cf_core
+    cf_datagen
+)
+if(NOT WIN32)
+    target_link_libraries(threading_benchmark Threads::Threads)
+endif()
+
 # 安装示例程序
-install(TARGETS simple_viewer heightmap_loader interactive_editor lod_demo
+install(TARGETS simple_viewer heightmap_loader interactive_editor lod_demo threading_benchmark
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/examples
 )

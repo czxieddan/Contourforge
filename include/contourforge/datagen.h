@@ -9,6 +9,7 @@
 
 #include "types.h"
 #include "core.h"
+#include "threading.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -115,6 +116,44 @@ cf_result_t cf_simplify_visvalingam(
     const cf_point3_t* points,
     size_t count,
     size_t target_count,
+    cf_point3_t** out_points,
+    size_t* out_count
+);
+
+/* ========== 并行处理API ========== */
+
+/**
+ * @brief 并行提取等高线
+ * @param heightmap 高度图
+ * @param iso_value 等高线高度值
+ * @param thread_pool 线程池（NULL则使用单线程）
+ * @param point_set 输出点集
+ * @param line_set 输出线集
+ * @return 返回码
+ */
+cf_result_t cf_contour_extract_parallel(
+    const cf_heightmap_t* heightmap,
+    float iso_value,
+    cf_thread_pool_t* thread_pool,
+    cf_point_set_t* point_set,
+    cf_line_set_t* line_set
+);
+
+/**
+ * @brief 并行Douglas-Peucker线段简化
+ * @param points 输入点数组
+ * @param count 点数量
+ * @param tolerance 容差
+ * @param thread_pool 线程池（NULL则使用单线程）
+ * @param out_points 输出点数组
+ * @param out_count 输出点数量
+ * @return 返回码
+ */
+cf_result_t cf_simplify_douglas_peucker_parallel(
+    const cf_point3_t* points,
+    size_t count,
+    float tolerance,
+    cf_thread_pool_t* thread_pool,
     cf_point3_t** out_points,
     size_t* out_count
 );

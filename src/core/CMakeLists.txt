@@ -5,11 +5,14 @@ set(CF_CORE_SOURCES
     octree.c
     version.c
     lod_generator.c
+    thread_pool.c
+    lod_parallel.c
 )
 
 set(CF_CORE_HEADERS
     ${CMAKE_SOURCE_DIR}/include/contourforge/core.h
     ${CMAKE_SOURCE_DIR}/include/contourforge/types.h
+    ${CMAKE_SOURCE_DIR}/include/contourforge/threading.h
 )
 
 # 创建核心库
@@ -17,6 +20,15 @@ if(CF_BUILD_SHARED)
     add_library(cf_core SHARED ${CF_CORE_SOURCES} ${CF_CORE_HEADERS})
 else()
     add_library(cf_core STATIC ${CF_CORE_SOURCES} ${CF_CORE_HEADERS})
+endif()
+
+# 链接线程库
+if(WIN32)
+    # Windows使用内置线程API
+else()
+    # POSIX系统使用pthread
+    find_package(Threads REQUIRED)
+    target_link_libraries(cf_core PUBLIC Threads::Threads)
 endif()
 
 # 包含目录

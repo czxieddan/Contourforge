@@ -326,6 +326,21 @@ cf_result_t cf_lod_create(
 );
 
 /**
+ * @brief 并行创建LOD模型
+ * @param base_model 基础模型
+ * @param config LOD配置
+ * @param thread_pool 线程池（NULL则使用单线程）
+ * @param lod_model 输出LOD模型指针
+ * @return 返回码
+ */
+cf_result_t cf_lod_create_parallel(
+    cf_model_t* base_model,
+    const cf_lod_config_t* config,
+    cf_thread_pool_t* thread_pool,
+    cf_lod_model_t** lod_model
+);
+
+/**
  * @brief 根据距离选择LOD层级
  * @param lod_model LOD模型
  * @param distance 相机到模型的距离

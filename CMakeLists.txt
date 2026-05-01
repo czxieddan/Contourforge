@@ -59,6 +59,15 @@ if(CF_ENABLE_SIMD)
     add_definitions(-DCF_ENABLE_SIMD)
 endif()
 
+# 线程支持
+option(CF_ENABLE_THREADING "Enable multi-threading support" ON)
+if(CF_ENABLE_THREADING)
+    add_definitions(-DCF_ENABLE_THREADING)
+    if(NOT WIN32)
+        find_package(Threads REQUIRED)
+    endif()
+endif()
+
 # OpenMP支持
 if(CF_ENABLE_OPENMP)
     find_package(OpenMP)

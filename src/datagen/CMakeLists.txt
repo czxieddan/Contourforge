@@ -4,6 +4,8 @@ set(CF_DATAGEN_SOURCES
     contour.c
     simplify.c
     topology.c
+    contour_parallel.c
+    simplify_parallel.c
 )
 
 set(CF_DATAGEN_HEADERS
