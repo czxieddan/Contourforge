@@ -1,7 +1,7 @@
-# Contourforge 架构设计文档
+﻿# Contourforge 架构设计文档
 
-**版本**: 1.0.0  
-**日期**: 2026-04-30  
+**版本**: 0.3.0
+**日期**: 2026-04-30
 **作者**: Contourforge Architecture Team
 
 ---
@@ -88,21 +88,21 @@ graph TB
     subgraph "应用层"
         A[测试程序/示例]
     end
-    
+
     subgraph "库层"
         B[控制库<br/>cf_control]
         C[渲染库<br/>cf_rendering]
         D[数据生成库<br/>cf_datagen]
         E[核心库<br/>cf_core]
     end
-    
+
     subgraph "第三方依赖"
         F[OpenGL]
         G[GLFW]
         H[cglm]
         I[stb_image]
     end
-    
+
     A --> B
     A --> C
     A --> D
@@ -318,8 +318,8 @@ typedef struct cf_octree_node {
 ```c
 // 初始化渲染器
 cf_result_t cf_renderer_init(
-    int width, 
-    int height, 
+    int width,
+    int height,
     const char* title,
     cf_renderer_t** renderer
 );
@@ -473,7 +473,7 @@ __m256 vout = _mm256_add_ps(va, vb);
 
 ```cmake
 cmake_minimum_required(VERSION 3.15)
-project(Contourforge VERSION 1.0.0 LANGUAGES C)
+project(Contourforge VERSION 0.3.0 LANGUAGES C)
 
 # C11标准
 set(CMAKE_C_STANDARD 11)
@@ -698,11 +698,11 @@ Offset | Size | Field
 
 ### B. 联系方式
 
-- **项目主页**: https://github.com/username/contourforge
-- **问题反馈**: https://github.com/username/contourforge/issues
-- **邮件**: contourforge@example.com
+- **项目主页**: https://github.com/czxieddan/contourforge
+- **问题反馈**: https://github.com/czxieddan/contourforge/issues
+- **邮件**: czxieddan@gmail.com
 
 ---
 
-**文档版本**: 1.0.0  
+**文档版本**: 0.3.0
 **最后更新**: 2026-04-30

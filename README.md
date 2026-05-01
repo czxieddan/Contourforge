@@ -4,13 +4,11 @@
 
 **高性能3D地理等高线渲染库**
 
+[![Version](https://img.shields.io/badge/version-v0.3.0-brightgreen.svg)](https://github.com/czxieddan/contourforge/releases/tag/v0.3.0)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%203.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 [![C Standard](https://img.shields.io/badge/C-C11-blue.svg)](https://en.wikipedia.org/wiki/C11_(C_standard_revision))
 [![OpenGL](https://img.shields.io/badge/OpenGL-3.3-green.svg)](https://www.opengl.org/)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](https://github.com/czxieddan/contourforge)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/czxieddan/contourforge)
-
-[English](#) | [简体中文](#)
 
 </div>
 
@@ -18,384 +16,245 @@
 
 ## 简介
 
-Contourforge是一个开源的高性能3D地理等高线渲染库，使用C语言开发，专为处理千万级节点的大规模地形数据而设计。它提供了从高度图加载、等高线提取、线段简化到实时渲染和交互编辑的完整工作流。
+Contourforge是一个开源的高性能3D地理等高线渲染库，使用C11开发，专为处理大规模地形和高度图数据而设计。它提供从高度图加载、等高线提取、线段简化、LOD、多线程处理到实时OpenGL渲染和交互编辑的完整工作流。
 
-### 核心特性
+## v0.3.0 版本亮点
 
-- **🚀 LOD系统**: 5级细节层次，2-5x渲染性能提升
-- **⚡ 多线程支持**: 跨平台线程池，3x数据处理加速
-- **高性能渲染**: 支持千万级节点实时渲染（目标60 FPS）
-- **模块化设计**: 独立的核心、渲染、数据生成、交互控制库
-- **跨平台支持**: Windows、Linux、macOS全平台兼容
-- **易于集成**: 简洁的C语言API，清晰的文档
-- **完整工作流**: 从灰度图到3D模型的一站式解决方案
-- **灵活配置**: 支持多种等高线生成和简化算法
-- **实时编辑**: 支持节点选择、移动、插入和删除
-- **空间索引**: 八叉树加速空间查询和视锥剔除
-- **内存优化**: 内存池管理，减少碎片和分配开销
+- **📁 多格式支持**：PNG、JPEG、BMP、TIFF、GeoTIFF识别和RAW高度数据加载。
+- **🏷️ 等高线标注**：TrueType字体、3D Billboard文字、自动标注放置、距离LOD和碰撞检测。
+- **📊 测试完善**：新增LOD、线程池、标注、格式加载测试，单元测试套件扩展到10个测试程序。
 
-### 应用场景
+## 核心特性
 
-- 地理信息系统（GIS）可视化
-- 地形数据分析和处理
-- 科学数据可视化
-- 游戏地形编辑器
-- 建筑规划和城市设计工具
-- 教育和研究项目
-
----
+- **多格式高度图输入**：标准图像格式、8/16/32位TIFF、6种RAW数据类型。
+- **等高线生成**：Marching Squares等高线提取，支持自定义间隔、范围和拓扑构建。
+- **LOD系统**：多级细节层次、距离选择、统计信息和并行生成。
+- **多线程支持**：跨平台线程池、任务队列、并行等高线/LOD/简化处理。
+- **3D标注系统**：高度值文字渲染、自动放置、最小间距、可见距离过滤。
+- **高性能渲染**：OpenGL 3.3 Core、相机控制、着色器和GPU缓冲管理。
+- **交互编辑**：节点选择、移动、插入、删除、撤销和重做。
+- **空间索引**：八叉树加速空间查询。
+- **模块化设计**：核心、数据生成、渲染、控制模块可独立集成。
 
 ## 快速开始
 
 ### 前置要求
 
-- **编译器**: MSVC 2019+, GCC 7+, 或 Clang 6+（支持C11标准）
-- **CMake**: 3.15或更高版本
-- **OpenGL**: 3.3或更高版本
-- **Git**: 用于克隆仓库和子模块
+- MSVC 2019+、GCC 7+或Clang 6+
+- CMake 3.15+
+- OpenGL 3.3+
+- Git
 
-### 安装
-
-#### Windows
+### Windows
 
 ```bash
 git clone --recursive https://github.com/czxieddan/contourforge.git
 cd contourforge
-mkdir build && cd build
-cmake .. -G "Visual Studio 17 2022" -A x64
-cmake --build . --config Release
-.\bin\Release\simple_viewer.exe
+cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DCF_BUILD_TESTS=ON -DCF_BUILD_EXAMPLES=ON
+cmake --build build --config Release
+ctest --test-dir build -C Release --output-on-failure
+build\bin\Release\heightmap_loader.exe data\heightmaps\terrain_peaks.png 10.0
 ```
 
-#### Linux
+### Linux
 
 ```bash
 sudo apt install build-essential cmake libgl1-mesa-dev
 git clone --recursive https://github.com/czxieddan/contourforge.git
 cd contourforge
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j$(nproc)
-./bin/simple_viewer
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCF_BUILD_TESTS=ON -DCF_BUILD_EXAMPLES=ON
+cmake --build build -j$(nproc)
+ctest --test-dir build --output-on-failure
+./build/bin/heightmap_loader data/heightmaps/terrain_peaks.png 10.0
 ```
 
-#### macOS
+### macOS
 
 ```bash
 brew install cmake
 git clone --recursive https://github.com/czxieddan/contourforge.git
 cd contourforge
-mkdir build && cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-make -j$(sysctl -n hw.ncpu)
-./bin/simple_viewer
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCF_BUILD_TESTS=ON -DCF_BUILD_EXAMPLES=ON
+cmake --build build -j$(sysctl -n hw.ncpu)
+ctest --test-dir build --output-on-failure
+./build/bin/heightmap_loader data/heightmaps/terrain_peaks.png 10.0
 ```
-
----
 
 ## 使用示例
 
-### 基础渲染
-
-从高度图生成等高线并渲染：
+### 1. 自动加载高度图并生成等高线
 
 ```c
 #include <contourforge/contourforge.h>
 
-int main() {
-    // 加载高度图
-    cf_heightmap_t* heightmap;
-    cf_heightmap_load("data/heightmaps/terrain.png", &heightmap);
-    
-    // 配置等高线生成参数
+int main(void) {
+    cf_heightmap_t* heightmap = NULL;
+    if (cf_heightmap_load("data/heightmaps/terrain_peaks.png", &heightmap) != CF_SUCCESS) {
+        return 1;
+    }
+
     cf_contour_config_t config = {
         .interval = 10.0f,
-        .min_height = 0.0f,
-        .max_height = 1000.0f,
+        .min_height = heightmap->min_height,
+        .max_height = heightmap->max_height,
         .simplify_tolerance = 0.5f,
         .build_topology = true
     };
-    
-    // 生成等高线模型
-    cf_model_t* model;
+
+    cf_model_t* model = NULL;
     cf_contour_generate(heightmap, &config, &model);
-    
-    // 初始化渲染器
-    cf_renderer_config_t renderer_config = {
-        .width = 1280,
-        .height = 720,
-        .title = "Contourforge Viewer",
-        .vsync = true,
-        .msaa_samples = 4,
-        .clear_color = {0.1f, 0.1f, 0.1f, 1.0f}
-    };
-    cf_renderer_t* renderer;
-    cf_renderer_init(&renderer_config, &renderer);
-    cf_renderer_set_model(renderer, model);
-    
-    // 渲染循环
-    while (!cf_renderer_should_close(renderer)) {
-        cf_renderer_begin_frame(renderer);
-        cf_renderer_render(renderer);
-        cf_renderer_end_frame(renderer);
-    }
-    
-    // 清理资源
-    cf_renderer_destroy(renderer);
+
     cf_model_destroy(model);
     cf_heightmap_destroy(heightmap);
-    
     return 0;
 }
 ```
 
-### 交互编辑
-
-支持节点选择和编辑：
+### 2. 加载TIFF和RAW数据
 
 ```c
-// 创建编辑器和选择器
-cf_editor_t* editor;
-cf_editor_create(model, 100, &editor);
+cf_heightmap_format_t format = cf_heightmap_detect_format("terrain.tif");
+printf("format=%s\n", cf_heightmap_format_name(format));
 
-cf_selector_t* selector;
-cf_selector_create(model, renderer, &selector);
+cf_heightmap_t* tiff_map = NULL;
+cf_heightmap_load_tiff("terrain.tif", &tiff_map);
 
-// 选择节点
-cf_index_t selected_point;
-if (cf_selector_pick_point(selector, mouse_x, mouse_y, 5.0f, &selected_point) == CF_SUCCESS) {
-    // 移动节点
-    cf_point3_t new_pos = {x, y, z};
-    cf_editor_move_point(editor, selected_point, new_pos);
-}
-
-// 撤销/重做
-if (cf_editor_can_undo(editor)) {
-    cf_editor_undo(editor);
-}
+cf_heightmap_t* raw_map = NULL;
+cf_heightmap_load_raw("terrain_u16.raw", 1024, 1024, CF_RAW_FORMAT_U16, &raw_map);
 ```
 
-更多示例请查看 [`examples/`](examples/) 目录。
+### 3. 启用等高线标注
 
----
+```c
+cf_font_t* font = NULL;
+cf_font_load("data/fonts/default.ttf", 18.0f, &font);
 
-## 项目结构
+cf_shader_t* text_shader = NULL;
+cf_shader_load("shaders/text.vert", "shaders/text.frag", &text_shader);
 
-```
-Contourforge/
-├── include/contourforge/      # 公共API头文件
-├── src/                       # 源代码实现
-│   ├── core/                  # 核心模块（内存、数据结构、八叉树）
-│   ├── rendering/             # 渲染模块（OpenGL、相机、着色器）
-│   ├── datagen/               # 数据生成（高度图、等高线、简化）
-│   └── control/               # 控制模块（输入、选择、编辑）
-├── shaders/                   # GLSL着色器
-├── tests/                     # 单元测试
-├── examples/                  # 示例程序
-├── data/                      # 测试数据
-├── third_party/               # 第三方依赖
-└── docs/                      # 文档
-```
+cf_text_renderer_t* text_renderer = NULL;
+cf_text_renderer_create(font, text_shader, &text_renderer);
 
----
+cf_label_config_t label_config = {
+    .spacing = 50.0f,
+    .min_distance = 5.0f,
+    .max_distance = 1000.0f,
+    .lod_levels = 4,
+    .unit = "m",
+    .decimal_places = 1,
+    .color = {1.0f, 1.0f, 1.0f, 1.0f},
+    .size = 18.0f,
+    .show_index = false
+};
 
-## 架构设计
-
-### 模块依赖关系
-
-```mermaid
-graph TB
-    App[应用层]
-    Control[控制库<br/>cf_control]
-    Rendering[渲染库<br/>cf_rendering]
-    Datagen[数据生成库<br/>cf_datagen]
-    Core[核心库<br/>cf_core]
-    
-    App --> Control
-    App --> Rendering
-    App --> Datagen
-    Control --> Rendering
-    Control --> Core
-    Rendering --> Core
-    Datagen --> Core
-    
-    style Core fill:#e1f5ff
-    style Rendering fill:#fff4e1
-    style Datagen fill:#e8f5e9
-    style Control fill:#fce4ec
-    style App fill:#f3e5f5
+cf_label_manager_t* labels = NULL;
+cf_label_manager_create(text_renderer, &label_config, &labels);
+cf_label_manager_generate_labels(labels, model, camera);
 ```
 
-### 数据处理流程
+### 4. 创建LOD模型
 
-```mermaid
-graph LR
-    A[灰度图PNG] --> B[高度图加载]
-    B --> C[等高线提取]
-    C --> D[线段简化]
-    D --> E[拓扑构建]
-    E --> F[模型数据]
-    F --> G[八叉树索引]
-    F --> H[GPU缓冲]
-    G --> I[视锥剔除]
-    H --> J[OpenGL渲染]
-    I --> J
+```c
+float distances[] = {50.0f, 150.0f, 300.0f};
+float ratios[] = {1.0f, 0.5f, 0.25f};
+cf_lod_config_t lod_config = {
+    .level_count = 3,
+    .distance_thresholds = distances,
+    .simplification_ratios = ratios,
+    .preserve_boundaries = true,
+    .use_importance_sampling = true
+};
+
+cf_lod_model_t* lod = NULL;
+cf_lod_create(model, &lod_config, &lod);
+int level = cf_lod_select_level(lod, 120.0f);
 ```
 
-### 核心技术栈
+## 示例程序
 
-| 组件 | 技术 | 版本 |
-|------|------|------|
-| 编程语言 | C | C11 |
-| 图形API | OpenGL | 3.3 Core |
-| 窗口管理 | GLFW | 3.3+ |
-| 数学库 | cglm | 0.8.0+ |
-| 图像加载 | stb_image | 单头文件 |
-| OpenGL加载 | glad | 3.3 Core |
-| 构建系统 | CMake | 3.15+ |
-
-详细架构设计请查看 [`ARCHITECTURE.md`](ARCHITECTURE.md)
-
----
-
-## 性能指标
-
-### v0.2.0 性能提升
-
-**渲染性能（LOD系统）**:
-
-| 场景类型 | v0.1.0 | v0.2.0 | 提升 |
-|---------|--------|--------|------|
-| 简单场景 (<10K点) | 60 FPS | 120 FPS | 2x |
-| 中等场景 (10K-100K点) | 30 FPS | 90 FPS | 3x |
-| 复杂场景 (>100K点) | 15 FPS | 60 FPS | 4x |
-
-**数据处理性能（多线程系统，4核CPU）**:
-
-| 操作 | 单线程 | 多线程 | 加速比 |
-|------|--------|--------|--------|
-| 等高线生成 | 1.0x | 3.2x | 3.2x |
-| LOD生成 | 1.0x | 3.8x | 3.8x |
-| 线段简化 | 1.0x | 2.7x | 2.7x |
-
-**设计目标**:
-
-| 指标 | 目标值 | 说明 |
-|------|--------|------|
-| 节点规模 | 1000万+ | 设计容量 |
-| 帧率 | 60 FPS | 1000万节点目标帧率 |
-| 内存占用 | <4GB | 1000万节点预期内存 |
-| 加载时间 | <3秒 | 1000万节点预期加载时间（多线程） |
-
-详细性能测试报告请查看 [`docs/PERFORMANCE.md`](docs/PERFORMANCE.md)
-
----
+| 程序 | 说明 |
+|------|------|
+| `simple_viewer` | 基础3D查看器 |
+| `heightmap_loader` | 高度图加载和等高线生成 |
+| `interactive_editor` | 交互式编辑器 |
+| `lod_demo` | LOD系统演示 |
+| `threading_benchmark` | 多线程性能基准测试 |
+| `format_converter` | 高度图格式信息查看和RAW转换 |
+| `label_demo` | 等高线标注系统演示 |
 
 ## 测试
 
 ```bash
-cd build
-ctest                    # 运行所有测试
-ctest -R test_memory     # 运行特定测试
-ctest -V                 # 详细输出
+ctest --test-dir build -C Debug --output-on-failure
+ctest --test-dir build -C Debug -R "test_lod|test_threading|test_label|test_formats" -V
 ```
 
----
+v0.3.0测试套件包含：
+
+- `test_core`
+- `test_memory`
+- `test_octree`
+- `test_datagen`
+- `test_contour`
+- `test_simplify`
+- `test_formats`
+- `test_lod`
+- `test_threading`
+- `test_label`
+
+## 项目结构
+
+```text
+Contourforge/
+├── include/contourforge/      # 公共API头文件
+├── src/                       # 源代码实现
+│   ├── core/                  # 核心、LOD、线程池
+│   ├── rendering/             # OpenGL、文字、标注
+│   ├── datagen/               # 高度图、格式加载、等高线、简化
+│   └── control/               # 输入、选择、编辑
+├── shaders/                   # GLSL着色器
+├── tests/                     # 单元测试
+├── examples/                  # 示例程序
+├── data/                      # 测试高度图和字体
+├── third_party/               # 第三方依赖
+└── docs/                      # 文档
+```
+
+## 性能指标
+
+| 能力 | v0.3.0状态 |
+|------|------------|
+| LOD渲染性能提升 | 2-5x |
+| 多线程数据处理加速 | 2-4x（4核CPU典型场景） |
+| RAW 512x512加载 | ~5ms |
+| TIFF 512x512加载 | ~20ms（未压缩灰度） |
+| 测试套件 | 10个测试程序，Windows Debug验证通过 |
 
 ## 文档
 
-### 用户文档
+- [API参考](docs/API.md)
+- [格式支持](docs/FORMAT_SUPPORT.md)
+- [标注系统](docs/LABEL_SYSTEM.md)
+- [LOD系统](docs/LOD_SYSTEM.md)
+- [多线程系统](docs/THREADING.md)
+- [用户指南](docs/USER_GUIDE.md)
+- [构建指南](BUILD.md)
+- [变更日志](CHANGELOG.md)
+- [v0.3.0发布说明](RELEASE_NOTES_v0.3.0.md)
 
-- [快速开始](docs/USER_GUIDE.md#快速开始) - 5分钟上手指南
-- [用户指南](docs/USER_GUIDE.md) - 完整使用教程
-- [API参考](docs/API.md) - 详细的API文档
-- [构建指南](BUILD.md) - 编译和安装说明
+## 已知问题
 
-### 开发者文档
-
-- [架构设计](ARCHITECTURE.md) - 系统架构和设计决策
-- [开发者指南](docs/DEVELOPER_GUIDE.md) - 如何参与开发
-- [贡献指南](CONTRIBUTING.md) - 代码规范和提交流程
-- [性能优化](docs/PERFORMANCE.md) - 性能分析和优化技巧
-- [变更日志](CHANGELOG.md) - 版本历史
-
-### v0.2.0 新增文档
-
-- [LOD系统](docs/LOD_SYSTEM.md) - LOD系统设计和使用
-- [多线程系统](docs/THREADING.md) - 多线程系统设计
-- [多线程实现报告](docs/THREADING_IMPLEMENTATION_REPORT.md) - 实现细节
-
----
-
-## 贡献
-
-欢迎贡献代码、报告问题或提出建议。
-
-### 如何贡献
-
-1. Fork本仓库
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建Pull Request
-
-### 代码规范
-
-- 遵循C11标准
-- 使用项目命名约定（`cf_<module>_<action>`）
-- 添加必要的注释和文档
-- 编写单元测试
-- 确保所有测试通过
-
-详细贡献指南请查看 [`CONTRIBUTING.md`](CONTRIBUTING.md)
-
----
+- 标注在极近距离或极高密度线段场景可能重叠。
+- TIFF压缩格式支持有限，推荐使用未压缩灰度TIFF。
+- GeoTIFF当前仅识别格式，完整坐标系统解析将在后续版本完善。
+- OpenGL相关API必须在有效上下文中调用。
 
 ## 许可证
 
-本项目采用 **GNU Affero General Public License v3.0 (AGPL-3.0)** 许可证。
-
-这意味着：
-- 您可以自由使用、修改和分发本软件
-- 您可以将本软件用于商业目的
-- 如果您修改了本软件并通过网络提供服务，您必须公开修改后的源代码
-- 任何基于本软件的衍生作品也必须使用AGPL-3.0许可证
-
-详细许可证条款请参见 [LICENSE](LICENSE) 文件。
-
-**第三方依赖许可证**：
-- GLFW: zlib/libpng License
-- glad: MIT/Public Domain
-- cglm: MIT
-- stb_image: MIT/Public Domain
-
-详见 [`third_party/README.md`](third_party/README.md)
-
----
-
-## 致谢
-
-感谢以下开源项目：
-
-- [GLFW](https://www.glfw.org/) - 窗口和输入管理库
-- [cglm](https://github.com/recp/cglm) - 高性能C语言数学库
-- [stb](https://github.com/nothings/stb) - 单头文件库集合
-- [glad](https://glad.dav1d.de/) - OpenGL加载器生成器
-
----
+本项目采用 **GNU Affero General Public License v3.0 (AGPL-3.0)** 许可证，详见 [LICENSE](LICENSE)。
 
 ## 联系方式
 
-- 项目主页: https://github.com/czxieddan/contourforge
-- 问题反馈: https://github.com/czxieddan/contourforge/issues
-- 功能建议: https://github.com/czxieddan/contourforge/discussions
-
----
-
-<div align="center">
-
-Made with ❤️ by Contourforge Team
-
-[回到顶部](#contourforge)
-
-</div>
+- 项目主页：https://github.com/czxieddan/contourforge
+- 问题反馈：https://github.com/czxieddan/contourforge/issues
+- 发布页：https://github.com/czxieddan/contourforge/releases

@@ -1,4 +1,4 @@
-# 贡献指南
+﻿# 贡献指南
 
 感谢您对Contourforge项目的关注！我们欢迎各种形式的贡献。
 
@@ -43,7 +43,7 @@
 
 发现Bug？请帮助我们改进！
 
-1. **检查是否已报告**: 搜索 [Issues](https://github.com/username/contourforge/issues)
+1. **检查是否已报告**: 搜索 [Issues](https://github.com/czxieddan/contourforge/issues)
 2. **创建新Issue**: 使用Bug报告模板
 3. **提供详细信息**:
    - 操作系统和版本
@@ -121,7 +121,7 @@ git clone https://github.com/YOUR_USERNAME/contourforge.git
 cd contourforge
 
 # 添加上游仓库
-git remote add upstream https://github.com/username/contourforge.git
+git remote add upstream https://github.com/czxieddan/contourforge.git
 
 # 安装依赖
 git submodule update --init --recursive
@@ -494,9 +494,9 @@ ctest -j8
 遇到问题？
 
 - 📖 查看 [文档](docs/)
-- 💬 在 [Discussions](https://github.com/username/contourforge/discussions) 提问
-- 🐛 在 [Issues](https://github.com/username/contourforge/issues) 报告问题
-- 📧 发送邮件到 contourforge@example.com
+- 💬 在 [Discussions](https://github.com/czxieddan/contourforge/discussions) 提问
+- 🐛 在 [Issues](https://github.com/czxieddan/contourforge/issues) 报告问题
+- 📧 发送邮件到 czxieddan@gmail.com
 
 ---
 
@@ -506,7 +506,7 @@ ctest -j8
 
 您的贡献将被记录在：
 - [CHANGELOG.md](CHANGELOG.md)
-- [贡献者列表](https://github.com/username/contourforge/graphs/contributors)
+- [贡献者列表](https://github.com/czxieddan/contourforge/graphs/contributors)
 
 ---
 

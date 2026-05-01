@@ -1,4 +1,4 @@
-# Contourforge 用户指南
+﻿# Contourforge 用户指南
 
 欢迎使用Contourforge！本指南将帮助您快速上手并掌握Contourforge的各项功能。
 
@@ -528,9 +528,9 @@ if (result != CF_SUCCESS) {
 ## 获取帮助
 
 - 📖 查看文档
-- 💬 [讨论区](https://github.com/username/contourforge/discussions)
-- 🐛 [问题追踪](https://github.com/username/contourforge/issues)
-- 📧 contourforge@example.com
+- 💬 [讨论区](https://github.com/czxieddan/contourforge/discussions)
+- 🐛 [问题追踪](https://github.com/czxieddan/contourforge/issues)
+- 📧 czxieddan@gmail.com
 
 ---
 

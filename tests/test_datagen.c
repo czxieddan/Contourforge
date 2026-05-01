@@ -5,6 +5,7 @@
 
 #include <contourforge/datagen.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 
 void test_heightmap_load(void)

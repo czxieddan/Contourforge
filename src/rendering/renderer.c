@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 /* 前向声明 */
 typedef struct cf_mesh cf_mesh_t;

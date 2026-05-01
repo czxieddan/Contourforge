@@ -1,4 +1,4 @@
-# Contourforge 测试程序使用说明
+﻿# Contourforge 测试程序使用说明
 
 本目录包含三个测试程序，用于验证Contourforge库的各项功能。
 
@@ -276,4 +276,4 @@ target_link_libraries(my_test
 
 如有问题或建议，请提交Issue或Pull Request。
 
-**项目地址：** https://github.com/yourusername/Contourforge
+**项目地址：** https://github.com/czxieddan/contourforge

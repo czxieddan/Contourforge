@@ -5,6 +5,7 @@
 
 #include <contourforge/core.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 
 void test_octree_create(void)

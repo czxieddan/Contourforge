@@ -1,201 +1,164 @@
-# Contourforge v0.3.0 发布说明
+# Contourforge v0.3.0 Release Notes
 
 发布日期：2026-05-01
 
-## 概述
+## 版本亮点
 
-Contourforge v0.3.0是一个重要的功能更新版本，新增了对多种专业地理数据格式的支持，包括TIFF、GeoTIFF和RAW格式。此版本保持了与v0.2.0的完全向后兼容性。
+- 📁 多格式支持：TIFF、GeoTIFF、RAW等专业地理数据格式
+- 🏷️ 等高线标注：3D场景中显示高度值，支持TrueType字体和Billboard效果
+- 📊 完善的测试：新增LOD、线程池、标注、格式加载单元测试
 
-## 主要新增功能
+## 新功能
 
-### 🎯 多格式支持
+### 1. 多格式支持
 
-#### 1. TIFF格式支持
-- 支持8位、16位、32位灰度TIFF图像
-- 支持整数和浮点数数据类型
-- 自动字节序检测（大端/小端）
-- 使用轻量级单头文件库，无需外部依赖
+- TIFF格式（8/16/32位灰度，高度数据自动归一化）
+- GeoTIFF格式识别（地理元数据接口预留）
+- RAW格式（U8、U16、I16、U32、I32、F32六种数据类型）
+- 自动格式检测（扩展名和文件魔数）
+- 格式转换工具 `format_converter`
+- 统一加载接口 `cf_heightmap_load()` 可自动分派PNG/JPEG/BMP/TIFF加载器
 
-#### 2. GeoTIFF格式识别
-- 自动检测GeoTIFF文件
-- 预留地理元数据接口
-- 为未来的坐标系统支持做准备
+### 2. 等高线标注
 
-#### 3. RAW格式支持
-- 支持6种数据类型：U8、U16、I16、U32、I32、F32
-- 适用于专业地理数据处理
-- 高性能直接内存访问
+- TrueType字体渲染（基于 `stb_truetype`）
+- 3D文字Billboard效果
+- 自动标注放置算法
+- 碰撞检测与最小距离约束
+- 基于相机距离的LOD标注密度
+- 可配置单位、小数位、颜色、字号和显示距离
 
-#### 4. 自动格式检测
-- 基于文件扩展名的智能检测
-- 支持文件魔数验证
-- 统一的加载接口
+### 3. 测试完善
 
-### 🛠️ 新增API
+- LOD系统测试：创建/销毁、层级选择、统计信息、并行LOD生成
+- 线程池测试：创建/销毁、任务提交执行、并发安全性、轻量性能验证
+- 标注系统测试：字体加载参数验证、标注生成、放置算法、距离过滤
+- 格式加载测试：格式检测、RAW加载、参数验证、多数据类型加载
+
+## API变更
+
+### 新增API
+
+#### 格式支持
+
+- `cf_heightmap_detect_format()`
+- `cf_heightmap_format_name()`
+- `cf_heightmap_load_tiff()`
+- `cf_heightmap_load_raw()`
+- `cf_heightmap_format_t`
+- `cf_raw_format_t`
+- `cf_geo_metadata_t`
+
+#### 标注系统
+
+- `cf_font_load()`
+- `cf_font_destroy()`
+- `cf_text_renderer_create()`
+- `cf_text_renderer_render_3d()`
+- `cf_text_renderer_measure_width()`
+- `cf_text_renderer_destroy()`
+- `cf_label_manager_create()`
+- `cf_label_manager_generate_labels()`
+- `cf_label_manager_update()`
+- `cf_label_manager_render()`
+- `cf_label_manager_clear()`
+- `cf_label_manager_destroy()`
+- `cf_place_labels_on_contour()`
+- `cf_calculate_label_spacing_lod()`
+- `cf_filter_labels_by_distance()`
+- `cf_label_config_t`
+
+### 废弃API
+
+- 无
+
+## 使用示例
+
+### 自动加载TIFF/PNG/JPEG/BMP
 
 ```c
-// 格式检测
-cf_heightmap_format_t cf_heightmap_detect_format(const char* filename);
-const char* cf_heightmap_format_name(cf_heightmap_format_t format);
+cf_heightmap_t* heightmap = NULL;
+cf_result_t result = cf_heightmap_load("terrain.tif", &heightmap);
+if (result != CF_SUCCESS) {
+    return result;
+}
 
-// 格式特定加载
-cf_result_t cf_heightmap_load_tiff(const char* filepath, cf_heightmap_t** heightmap);
-cf_result_t cf_heightmap_load_raw(const char* filepath, int width, int height, 
-                                   cf_raw_format_t format, cf_heightmap_t** heightmap);
+printf("size=%dx%d, range=[%.3f, %.3f]\n",
+       heightmap->width,
+       heightmap->height,
+       heightmap->min_height,
+       heightmap->max_height);
+
+cf_heightmap_destroy(heightmap);
 ```
 
-### 📦 新增工具
+### 加载RAW高度图
 
-#### format_converter
-格式转换和信息查看工具：
-- 显示高度图详细信息
-- 格式转换（当前支持RAW导出）
-- 统计分析（平均值、标准差等）
-
-### 🧪 新增测试
-
-- `test_formats.c` - 多格式支持单元测试
-- 格式检测测试
-- RAW格式加载测试
-- 参数验证测试
-
-## 技术改进
-
-### 架构优化
-- 模块化的格式加载器设计
-- 统一的数据归一化处理
-- 可扩展的格式支持框架
-
-### 代码质量
-- 新增300+行单元测试
-- 完善的错误处理
-- 详细的API文档
-
-### 性能
-- TIFF加载：高效的strip-based读取
-- RAW加载：零拷贝直接内存访问
-- 格式检测：O(1)时间复杂度
-
-## 文件变更
-
-### 新增文件
-```
-third_party/tinytiff/tinytiffreader.h    - TIFF读取库
-src/datagen/tiff_loader.c                - TIFF加载实现
-src/datagen/raw_loader.c                 - RAW加载实现
-src/datagen/format_detect.c              - 格式检测实现
-examples/format_converter.c              - 格式转换工具
-tests/test_formats.c                     - 格式测试
-docs/FORMAT_SUPPORT.md                   - 格式支持文档
+```c
+cf_heightmap_t* heightmap = NULL;
+cf_result_t result = cf_heightmap_load_raw(
+    "terrain_u16.raw",
+    1024,
+    1024,
+    CF_RAW_FORMAT_U16,
+    &heightmap
+);
 ```
 
-### 修改文件
+### 启用等高线标注
+
+```c
+cf_font_t* font = NULL;
+cf_font_load("data/fonts/default.ttf", 18.0f, &font);
+
+cf_shader_t* text_shader = NULL;
+cf_shader_load("shaders/text.vert", "shaders/text.frag", &text_shader);
+
+cf_text_renderer_t* text_renderer = NULL;
+cf_text_renderer_create(font, text_shader, &text_renderer);
+
+cf_label_config_t label_config = {
+    .spacing = 50.0f,
+    .min_distance = 5.0f,
+    .max_distance = 1000.0f,
+    .lod_levels = 4,
+    .unit = "m",
+    .decimal_places = 1,
+    .color = {1.0f, 1.0f, 1.0f, 1.0f},
+    .size = 18.0f,
+    .show_index = false
+};
+
+cf_label_manager_t* labels = NULL;
+cf_label_manager_create(text_renderer, &label_config, &labels);
+cf_label_manager_generate_labels(labels, contour_model, camera);
 ```
-include/contourforge/datagen.h           - 新增API声明
-src/datagen/heightmap.c                  - 支持自动格式检测
-src/datagen/CMakeLists.txt               - 添加新源文件
-examples/heightmap_loader.c              - 显示格式信息
-examples/CMakeLists.txt                  - 添加format_converter
-tests/CMakeLists.txt                     - 添加test_formats
-CMakeLists.txt                           - 版本号更新为0.3.0
-```
-
-## 兼容性
-
-### 向后兼容
-✅ 完全兼容v0.2.0 API  
-✅ 现有代码无需修改  
-✅ 二进制接口稳定  
-
-### 平台支持
-- ✅ Windows 10/11
-- ✅ Linux (Ubuntu 20.04+)
-- ✅ macOS (10.15+)
-
-### 编译器支持
-- ✅ MSVC 2019+
-- ✅ GCC 9+
-- ✅ Clang 10+
-
-## 已知限制
-
-1. **TIFF压缩**：当前仅支持未压缩TIFF
-2. **GeoTIFF元数据**：暂不解析地理坐标信息
-3. **格式导出**：仅支持RAW格式导出
-4. **多通道TIFF**：仅使用第一通道
 
 ## 升级指南
 
-### 从v0.2.0升级
+从v0.2.0升级到v0.3.0：
 
-无需修改代码，直接重新编译即可。
+1. 更新库文件并重新编译项目。
+2. 保持现有PNG/JPEG/BMP高度图加载代码不变。
+3. 可选：使用新的格式支持API加载TIFF/RAW数据。
+4. 可选：在渲染初始化后创建文字渲染器和标注管理器，启用等高线标注。
+5. 可选：运行新增测试验证集成：`ctest -R "test_lod|test_threading|test_label|test_formats" -V`。
 
-### 使用新功能
+## 已知问题
 
-```c
-// 检测格式
-cf_heightmap_format_t format = cf_heightmap_detect_format("terrain.tif");
-printf("格式: %s\n", cf_heightmap_format_name(format));
+- 标注在极近距离或高密度线段场景中可能重叠。
+- TIFF压缩格式支持有限，推荐使用未压缩灰度TIFF。
+- GeoTIFF当前仅识别格式，暂不解析完整投影和坐标系统。
+- OpenGL相关字体和文字渲染API必须在有效OpenGL上下文中调用。
 
-// 加载TIFF
-cf_heightmap_t* hm = NULL;
-cf_heightmap_load_tiff("terrain.tif", &hm);
+## 下载
 
-// 加载RAW
-cf_heightmap_load_raw("data.raw", 512, 512, CF_RAW_FORMAT_U16, &hm);
-```
+- 源代码：https://github.com/czxieddan/contourforge/archive/v0.3.0.zip
+- 发布页：https://github.com/czxieddan/contourforge/releases/tag/v0.3.0
 
-## 构建说明
+## 校验状态
 
-```bash
-# 克隆仓库
-git clone https://github.com/yourusername/Contourforge.git
-cd Contourforge
-
-# 构建
-mkdir build && cd build
-cmake ..
-cmake --build .
-
-# 运行测试
-ctest
-
-# 运行示例
-./bin/format_converter --help
-./bin/heightmap_loader ../data/heightmaps/terrain_peaks.png 10.0
-```
-
-## 性能基准
-
-在Intel Core i7-10700K @ 3.8GHz上的测试结果：
-
-| 格式 | 文件大小 | 分辨率 | 加载时间 |
-|------|---------|--------|---------|
-| PNG  | 256KB   | 512x512 | ~15ms  |
-| TIFF | 512KB   | 512x512 | ~20ms  |
-| RAW  | 512KB   | 512x512 | ~5ms   |
-
-## 未来计划 (v0.4.0)
-
-- [ ] TIFF压缩支持（LZW、Deflate）
-- [ ] GeoTIFF元数据解析
-- [ ] PNG/TIFF格式导出
-- [ ] 16位PNG支持
-- [ ] HGT（SRTM）格式支持
-- [ ] 批量转换工具
-
-## 贡献
-
-感谢所有为此版本做出贡献的开发者！
-
-如果您发现任何问题或有功能建议，请在GitHub上提交Issue。
-
-## 许可证
-
-MIT License - 详见LICENSE文件
-
----
-
-**完整更新日志**: [CHANGELOG.md](../CHANGELOG.md)  
-**格式支持文档**: [FORMAT_SUPPORT.md](FORMAT_SUPPORT.md)  
-**开发者指南**: [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)
+- Windows MSVC Debug构建：通过
+- 示例程序编译：通过
+- 单元测试套件：新增LOD、线程池、标注和格式测试
+- 文档：README、CHANGELOG、API、发布说明和项目完成报告已更新

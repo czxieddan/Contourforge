@@ -35,6 +35,21 @@ add_executable(test_formats test_formats.c)
 target_link_libraries(test_formats cf_core cf_datagen)
 add_test(NAME test_formats COMMAND test_formats)
 
+# LOD系统测试
+add_executable(test_lod test_lod.c)
+target_link_libraries(test_lod cf_core cf_datagen)
+add_test(NAME test_lod COMMAND test_lod)
+
+# 线程池测试
+add_executable(test_threading test_threading.c)
+target_link_libraries(test_threading cf_core)
+add_test(NAME test_threading COMMAND test_threading)
+
+# 标注系统测试
+add_executable(test_label test_label.c)
+target_link_libraries(test_label cf_core cf_rendering)
+add_test(NAME test_label COMMAND test_label)
+
 # 渲染器测试（需要OpenGL上下文）
 # add_executable(test_renderer test_renderer.c)
 # target_link_libraries(test_renderer cf_core cf_rendering)

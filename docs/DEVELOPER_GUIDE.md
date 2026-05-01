@@ -1,4 +1,4 @@
-# Contourforge 开发者指南
+﻿# Contourforge 开发者指南
 
 本指南面向希望参与Contourforge开发或深入了解其内部实现的开发者。
 
@@ -95,7 +95,7 @@ cf_control → cf_rendering → cf_core
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/username/contourforge.git
+git clone https://github.com/czxieddan/contourforge.git
 cd contourforge
 
 # 2. 初始化子模块

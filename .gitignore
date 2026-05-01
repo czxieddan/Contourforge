@@ -168,9 +168,11 @@ __pycache__/
 venv/
 env/
 
-# Font archives
+# Font archives and unused extracted font variants
 data/fonts/*.zip
 data/fonts/__MACOSX/
+data/fonts/roboto/*.ttf
+!data/fonts/roboto/Roboto-Regular.ttf
 
 # Editor configs (keep)
 !.editorconfig

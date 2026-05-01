@@ -106,17 +106,17 @@ typedef struct {
 /**
  * @brief 最小值
  */
+#ifndef CF_MIN
 #define CF_MIN(a, b) ((a) < (b) ? (a) : (b))
-
-/**
- * @brief 最大值
- */
-#define CF_MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
 
 /**
  * @brief 限制值在范围内
+ * @note 不依赖CF_MAX宏，避免与Windows SDK头文件中的CF_MAX定义冲突。
  */
-#define CF_CLAMP(x, min, max) (CF_MIN(CF_MAX((x), (min)), (max)))
+#ifndef CF_CLAMP
+#define CF_CLAMP(x, min, max) (((x) < (min)) ? (min) : (((x) > (max)) ? (max) : (x)))
+#endif
 
 #ifdef __cplusplus
 }

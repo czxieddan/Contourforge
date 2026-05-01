@@ -498,6 +498,59 @@ void cf_label_manager_clear(cf_label_manager_t* manager);
  */
 void cf_label_manager_destroy(cf_label_manager_t* manager);
 
+/**
+ * @brief 沿等高线放置标注位置
+ * @param lines 等高线线段集合
+ * @param height 等高线高度
+ * @param spacing 标注间距
+ * @param min_distance 最小标注距离（用于避免重叠）
+ * @param positions 输出标注位置数组
+ * @param max_positions 最大标注数量
+ * @param out_count 输出实际标注数量
+ * @return 返回码
+ */
+cf_result_t cf_place_labels_on_contour(
+    const cf_line_set_t* lines,
+    float height,
+    float spacing,
+    float min_distance,
+    cf_point3_t* positions,
+    size_t max_positions,
+    size_t* out_count
+);
+
+/**
+ * @brief 根据相机距离计算标注间距（LOD）
+ * @param camera_distance 相机到场景中心的距离
+ * @param base_spacing 基础标注间距
+ * @param lod_levels LOD层级数
+ * @return 调整后的标注间距
+ */
+float cf_calculate_label_spacing_lod(
+    float camera_distance,
+    float base_spacing,
+    int lod_levels
+);
+
+/**
+ * @brief 根据距离过滤标注可见性
+ * @param positions 标注位置数组
+ * @param count 标注数量
+ * @param camera_pos 相机位置
+ * @param min_distance 最小显示距离
+ * @param max_distance 最大显示距离
+ * @param visible 输出可见性数组
+ * @return 返回码
+ */
+cf_result_t cf_filter_labels_by_distance(
+    const cf_point3_t* positions,
+    size_t count,
+    cf_point3_t camera_pos,
+    float min_distance,
+    float max_distance,
+    bool* visible
+);
+
 #ifdef __cplusplus
 }
 #endif

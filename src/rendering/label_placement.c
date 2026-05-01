@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file label_placement.c
  * @brief 标注放置算法实现
  */
@@ -54,59 +54,68 @@ cf_result_t cf_place_labels_on_contour(
     if (lines == NULL || positions == NULL || out_count == NULL) {
         return CF_ERROR_INVALID_PARAM;
     }
-    
+
     if (lines->count == 0) {
         *out_count = 0;
         return CF_SUCCESS;
     }
-    
+
     size_t label_count = 0;
     float accumulated_length = 0.0f;
-    
+
     /* 遍历所有线段 */
     for (size_t i = 0; i < lines->count && label_count < max_positions; i++) {
         const cf_line_t* line = &lines->lines[i];
-        
-        /* 遍历线段中的点 */
-        for (size_t j = 0; j < line->count - 1 && label_count < max_positions; j++) {
-            cf_point3_t p1 = line->points[j];
-            cf_point3_t p2 = line->points[j + 1];
-            
-            /* 计算线段长度 */
-            float segment_length = distance_3d(p1, p2);
-            
-            /* 如果累积长度超过间距，放置标注 */
-            while (accumulated_length >= spacing && label_count < max_positions) {
-                /* 计算标注在线段上的位置 */
-                float t = (spacing - (accumulated_length - segment_length)) / segment_length;
-                
-                cf_point3_t label_pos;
-                label_pos.x = p1.x + t * (p2.x - p1.x);
-                label_pos.y = p1.y + t * (p2.y - p1.y);
-                label_pos.z = p1.z + t * (p2.z - p1.z);
-                
-                /* 检查是否与已有标注重叠 */
-                bool overlaps = false;
-                for (size_t k = 0; k < label_count; k++) {
-                    if (labels_overlap(label_pos, positions[k], min_distance)) {
-                        overlaps = true;
-                        break;
-                    }
+        const cf_point3_t* p1_ptr = cf_point_set_get(lines->point_set, line->p1);
+        const cf_point3_t* p2_ptr = cf_point_set_get(lines->point_set, line->p2);
+
+        if (p1_ptr == NULL || p2_ptr == NULL) {
+            continue;
+        }
+
+        cf_point3_t p1 = *p1_ptr;
+        cf_point3_t p2 = *p2_ptr;
+        p1.z = height;
+        p2.z = height;
+
+        /* 计算线段长度 */
+        float segment_length = distance_3d(p1, p2);
+        if (segment_length <= 1e-6f) {
+            continue;
+        }
+
+        accumulated_length += segment_length;
+
+        /* 如果累积长度超过间距，放置标注 */
+        while (accumulated_length >= spacing && label_count < max_positions) {
+            /* 计算标注在线段上的位置 */
+            float t = 1.0f - ((accumulated_length - spacing) / segment_length);
+            t = CF_CLAMP(t, 0.0f, 1.0f);
+
+            cf_point3_t label_pos;
+            label_pos.x = p1.x + t * (p2.x - p1.x);
+            label_pos.y = p1.y + t * (p2.y - p1.y);
+            label_pos.z = height;
+
+            /* 检查是否与已有标注重叠 */
+            bool overlaps = false;
+            for (size_t k = 0; k < label_count; k++) {
+                if (labels_overlap(label_pos, positions[k], min_distance)) {
+                    overlaps = true;
+                    break;
                 }
-                
-                /* 如果不重叠，添加标注 */
-                if (!overlaps) {
-                    positions[label_count] = label_pos;
-                    label_count++;
-                }
-                
-                accumulated_length -= spacing;
             }
-            
-            accumulated_length += segment_length;
+
+            /* 如果不重叠，添加标注 */
+            if (!overlaps) {
+                positions[label_count] = label_pos;
+                label_count++;
+            }
+
+            accumulated_length -= spacing;
         }
     }
-    
+
     *out_count = label_count;
     return CF_SUCCESS;
 }
@@ -126,7 +135,7 @@ float cf_calculate_label_spacing_lod(
     if (lod_levels <= 1) {
         return base_spacing;
     }
-    
+
     /* 根据距离计算LOD层级 */
     if (camera_distance < 100.0f) {
         return base_spacing;
@@ -162,11 +171,11 @@ cf_result_t cf_filter_labels_by_distance(
     if (positions == NULL || visible == NULL) {
         return CF_ERROR_INVALID_PARAM;
     }
-    
+
     for (size_t i = 0; i < count; i++) {
         float dist = distance_3d(positions[i], camera_pos);
         visible[i] = (dist >= min_distance && dist <= max_distance);
     }
-    
+
     return CF_SUCCESS;
 }

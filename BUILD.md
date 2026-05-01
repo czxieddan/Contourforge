@@ -1,4 +1,4 @@
-# Contourforge 构建指南
+﻿# Contourforge 构建指南
 
 本文档提供Contourforge项目的详细构建说明。
 
@@ -58,7 +58,7 @@ Contourforge依赖以下第三方库（已包含在`third_party/`目录）：
 
 ```bash
 # 1. 克隆仓库（包含子模块）
-git clone --recursive https://github.com/username/contourforge.git
+git clone --recursive https://github.com/czxieddan/contourforge.git
 cd contourforge
 
 # 2. 生成Visual Studio项目
@@ -79,7 +79,7 @@ cmake --build . --config Release
 sudo apt install build-essential cmake libgl1-mesa-dev
 
 # 2. 克隆仓库
-git clone --recursive https://github.com/username/contourforge.git
+git clone --recursive https://github.com/czxieddan/contourforge.git
 cd contourforge
 
 # 3. 编译
@@ -98,7 +98,7 @@ make -j$(nproc)
 brew install cmake
 
 # 2. 克隆仓库
-git clone --recursive https://github.com/username/contourforge.git
+git clone --recursive https://github.com/czxieddan/contourforge.git
 cd contourforge
 
 # 3. 编译
@@ -118,7 +118,7 @@ make -j$(sysctl -n hw.ncpu)
 
 ```bash
 # 克隆主仓库和子模块
-git clone --recursive https://github.com/username/contourforge.git
+git clone --recursive https://github.com/czxieddan/contourforge.git
 
 # 如果已经克隆但没有子模块
 cd contourforge
@@ -376,7 +376,7 @@ xcode-select --install
 git submodule update --init --recursive
 
 # 或重新克隆
-git clone --recursive https://github.com/username/contourforge.git
+git clone --recursive https://github.com/czxieddan/contourforge.git
 ```
 
 #### 3. 编译错误：找不到GLFW
@@ -521,8 +521,8 @@ cmake .. -DCPACK_GENERATOR="ZIP;TGZ"
 cpack
 
 # 生成的包：
-# - Contourforge-1.0.0-win64.zip
-# - Contourforge-1.0.0-Linux.tar.gz
+# - Contourforge-0.3.0-win64.zip
+# - Contourforge-0.3.0-Linux.tar.gz
 ```
 
 ---
@@ -550,8 +550,8 @@ include(FetchContent)
 
 FetchContent_Declare(
     contourforge
-    GIT_REPOSITORY https://github.com/username/contourforge.git
-    GIT_TAG v0.1.0
+    GIT_REPOSITORY https://github.com/czxieddan/contourforge.git
+    GIT_TAG v0.3.0
 )
 
 FetchContent_MakeAvailable(contourforge)
@@ -682,11 +682,11 @@ jobs:
 遇到构建问题？
 
 - 📖 查看 [故障排除](#故障排除) 部分
-- 🐛 在 [Issues](https://github.com/username/contourforge/issues) 报告问题
-- 💬 在 [Discussions](https://github.com/username/contourforge/discussions) 提问
-- 📧 发送邮件到 contourforge@example.com
+- 🐛 在 [Issues](https://github.com/czxieddan/contourforge/issues) 报告问题
+- 💬 在 [Discussions](https://github.com/czxieddan/contourforge/discussions) 提问
+- 📧 发送邮件到 czxieddan@gmail.com
 
 ---
 
 **最后更新**: 2026-04-30
-**文档版本**: 1.0.0
+**文档版本**: 0.3.0
