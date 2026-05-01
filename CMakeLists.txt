@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(Contourforge VERSION 0.2.0 LANGUAGES C)
+project(Contourforge VERSION 0.3.0 LANGUAGES C)
 
 # C标准
 set(CMAKE_C_STANDARD 11)

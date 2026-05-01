@@ -30,6 +30,11 @@ add_executable(test_simplify test_simplify.c)
 target_link_libraries(test_simplify cf_core cf_datagen)
 add_test(NAME test_simplify COMMAND test_simplify)
 
+# 格式支持测试
+add_executable(test_formats test_formats.c)
+target_link_libraries(test_formats cf_core cf_datagen)
+add_test(NAME test_formats COMMAND test_formats)
+
 # 渲染器测试（需要OpenGL上下文）
 # add_executable(test_renderer test_renderer.c)
 # target_link_libraries(test_renderer cf_core cf_rendering)

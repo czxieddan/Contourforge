@@ -1,7 +1,7 @@
 /**
  * @file datagen.h
  * @brief Contourforge数据生成模块API
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 #ifndef CF_DATAGEN_H
@@ -14,6 +14,33 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/* ========== 高度图格式 ========== */
+
+/**
+ * @brief 高度图格式枚举
+ */
+typedef enum {
+    CF_FORMAT_UNKNOWN = 0,  /**< 未知格式 */
+    CF_FORMAT_PNG,          /**< PNG格式 */
+    CF_FORMAT_JPEG,         /**< JPEG格式 */
+    CF_FORMAT_BMP,          /**< BMP格式 */
+    CF_FORMAT_TIFF,         /**< TIFF格式 */
+    CF_FORMAT_GEOTIFF,      /**< GeoTIFF格式 */
+    CF_FORMAT_RAW           /**< RAW格式 */
+} cf_heightmap_format_t;
+
+/**
+ * @brief RAW格式数据类型
+ */
+typedef enum {
+    CF_RAW_FORMAT_U8 = 0,   /**< 8位无符号整数 */
+    CF_RAW_FORMAT_U16,      /**< 16位无符号整数 */
+    CF_RAW_FORMAT_I16,      /**< 16位有符号整数 */
+    CF_RAW_FORMAT_U32,      /**< 32位无符号整数 */
+    CF_RAW_FORMAT_I32,      /**< 32位有符号整数 */
+    CF_RAW_FORMAT_F32       /**< 32位浮点数 */
+} cf_raw_format_t;
 
 /* ========== 高度图 ========== */
 
@@ -29,13 +56,67 @@ typedef struct {
 } cf_heightmap_t;
 
 /**
- * @brief 加载高度图（从灰度图）
+ * @brief 高度图元数据
+ */
+typedef struct {
+    double min_x, max_x;    /**< 经度范围 */
+    double min_y, max_y;    /**< 纬度范围 */
+    double pixel_scale_x;   /**< X方向分辨率 */
+    double pixel_scale_y;   /**< Y方向分辨率 */
+    char projection[256];   /**< 投影信息 */
+    char datum[64];         /**< 基准面 */
+} cf_geo_metadata_t;
+
+/**
+ * @brief 检测高度图格式
+ * @param filename 文件名
+ * @return 格式类型
+ */
+cf_heightmap_format_t cf_heightmap_detect_format(const char* filename);
+
+/**
+ * @brief 获取格式名称
+ * @param format 格式类型
+ * @return 格式名称字符串
+ */
+const char* cf_heightmap_format_name(cf_heightmap_format_t format);
+
+/**
+ * @brief 加载高度图（自动检测格式）
  * @param filepath 文件路径
  * @param heightmap 输出高度图指针
  * @return 返回码
  */
 cf_result_t cf_heightmap_load(
     const char* filepath,
+    cf_heightmap_t** heightmap
+);
+
+/**
+ * @brief 从TIFF文件加载高度图
+ * @param filepath 文件路径
+ * @param heightmap 输出高度图指针
+ * @return 返回码
+ */
+cf_result_t cf_heightmap_load_tiff(
+    const char* filepath,
+    cf_heightmap_t** heightmap
+);
+
+/**
+ * @brief 从RAW文件加载高度图
+ * @param filepath 文件路径
+ * @param width 图像宽度
+ * @param height 图像高度
+ * @param format RAW数据格式
+ * @param heightmap 输出高度图指针
+ * @return 返回码
+ */
+cf_result_t cf_heightmap_load_raw(
+    const char* filepath,
+    int width,
+    int height,
+    cf_raw_format_t format,
     cf_heightmap_t** heightmap
 );
 

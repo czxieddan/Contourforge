@@ -6,6 +6,9 @@ set(CF_DATAGEN_SOURCES
     topology.c
     contour_parallel.c
     simplify_parallel.c
+    tiff_loader.c
+    raw_loader.c
+    format_detect.c
 )
 
 set(CF_DATAGEN_HEADERS
@@ -33,6 +36,7 @@ target_include_directories(cf_datagen
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${STB_INCLUDE_DIR}
+        ${CMAKE_SOURCE_DIR}/third_party/tinytiff
 )
 
 # 设置库属性

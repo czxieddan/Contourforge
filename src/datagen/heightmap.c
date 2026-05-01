@@ -12,17 +12,16 @@
 #include <string.h>
 #include <math.h>
 
+/* 前向声明 */
+extern cf_result_t cf_heightmap_load_tiff(const char* filepath, cf_heightmap_t** heightmap);
+
 /**
- * @brief 从文件加载高度图
+ * @brief 使用stb_image加载标准图像格式（PNG/JPEG/BMP）
  */
-cf_result_t cf_heightmap_load(
+static cf_result_t load_with_stb_image(
     const char* filepath,
     cf_heightmap_t** heightmap
 ) {
-    if (!filepath || !heightmap) {
-        return CF_ERROR_INVALID_PARAM;
-    }
-
     // 使用stb_image加载图像
     int width, height, channels;
     unsigned char* image_data = stbi_load(filepath, &width, &height, &channels, 1);
@@ -68,6 +67,41 @@ cf_result_t cf_heightmap_load(
 
     *heightmap = hm;
     return CF_SUCCESS;
+}
+
+/**
+ * @brief 从文件加载高度图（自动检测格式）
+ */
+cf_result_t cf_heightmap_load(
+    const char* filepath,
+    cf_heightmap_t** heightmap
+) {
+    if (!filepath || !heightmap) {
+        return CF_ERROR_INVALID_PARAM;
+    }
+
+    // 检测文件格式
+    cf_heightmap_format_t format = cf_heightmap_detect_format(filepath);
+
+    // 根据格式选择加载器
+    switch (format) {
+        case CF_FORMAT_PNG:
+        case CF_FORMAT_JPEG:
+        case CF_FORMAT_BMP:
+            return load_with_stb_image(filepath, heightmap);
+        
+        case CF_FORMAT_TIFF:
+        case CF_FORMAT_GEOTIFF:
+            return cf_heightmap_load_tiff(filepath, heightmap);
+        
+        case CF_FORMAT_RAW:
+            // RAW格式需要额外参数，无法自动加载
+            return CF_ERROR_INVALID_FORMAT;
+        
+        default:
+            // 未知格式，尝试使用stb_image
+            return load_with_stb_image(filepath, heightmap);
+    }
 }
 
 /**

@@ -69,7 +69,14 @@ if(NOT WIN32)
     target_link_libraries(threading_benchmark Threads::Threads)
 endif()
 
+# 格式转换工具
+add_executable(format_converter format_converter.c)
+target_link_libraries(format_converter
+    cf_core
+    cf_datagen
+)
+
 # 安装示例程序
-install(TARGETS simple_viewer heightmap_loader interactive_editor lod_demo threading_benchmark
+install(TARGETS simple_viewer heightmap_loader interactive_editor lod_demo threading_benchmark format_converter
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/examples
 )

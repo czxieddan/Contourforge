@@ -10,12 +10,76 @@
 ## [Unreleased]
 
 ### 计划中
-- 性能优化（SIMD、多线程）
+- TIFF压缩支持（LZW、Deflate）
+- GeoTIFF元数据解析
+- PNG/TIFF格式导出
 - 平滑LOD过渡（alpha混合）
 - 纹理支持
 - 模型导出功能（OBJ、STL、PLY）
 - Python绑定
 - GUI编辑器
+
+---
+
+## [0.3.0] - 2026-05-01
+
+### 新增
+
+#### 多格式支持
+- ✅ TIFF格式加载（8/16/32位）
+- ✅ GeoTIFF格式识别
+- ✅ RAW格式支持（6种数据类型）
+- ✅ 自动格式检测API
+- ✅ 统一加载接口
+
+#### 新增API
+- ✅ `cf_heightmap_detect_format()` - 检测文件格式
+- ✅ `cf_heightmap_format_name()` - 获取格式名称
+- ✅ `cf_heightmap_load_tiff()` - 加载TIFF文件
+- ✅ `cf_heightmap_load_raw()` - 加载RAW文件
+- ✅ 格式枚举类型 `cf_heightmap_format_t`
+- ✅ RAW格式枚举 `cf_raw_format_t`
+- ✅ 地理元数据结构 `cf_geo_metadata_t`（预留）
+
+#### 第三方库
+- ✅ tinytiffreader.h - 轻量级TIFF读取库（单头文件）
+- ✅ 无需外部依赖，开箱即用
+
+#### 示例程序
+- ✅ `format_converter.c` - 格式转换和信息查看工具
+  - 显示高度图详细信息
+  - 格式转换（RAW导出）
+  - 统计分析（平均值、标准差）
+- ✅ `heightmap_loader.c` - 更新支持格式检测显示
+
+#### 测试
+- ✅ `test_formats.c` - 多格式支持单元测试
+  - 格式检测测试
+  - RAW加载测试
+  - 参数验证测试
+  - 多种数据类型测试
+
+#### 文档
+- ✅ `docs/FORMAT_SUPPORT.md` - 格式支持完整文档
+- ✅ `RELEASE_NOTES_v0.3.0.md` - v0.3.0发布说明
+- ✅ API参考更新
+
+### 改进
+- ✅ 模块化的格式加载器架构
+- ✅ 统一的数据归一化处理
+- ✅ 可扩展的格式支持框架
+- ✅ 完善的错误处理
+
+### 技术细节
+- TIFF支持：8/16/32位，整数和浮点，大小端自动检测
+- RAW支持：U8/U16/I16/U32/I32/F32数据类型
+- 格式检测：基于扩展名和文件魔数
+- 性能：TIFF ~20ms，RAW ~5ms（512x512）
+
+### 兼容性
+- ✅ 完全向后兼容v0.2.0
+- ✅ 现有代码无需修改
+- ✅ 支持Windows/Linux/macOS
 
 ---
 

@@ -240,13 +240,18 @@ int main(int argc, char** argv) {
     printf("步骤 1/4: 加载高度图...\n");
     printf("  文件: %s\n", heightmap_path);
     
+    // 检测格式
+    cf_heightmap_format_t format = cf_heightmap_detect_format(heightmap_path);
+    printf("  检测格式: %s\n", cf_heightmap_format_name(format));
+    
     clock_t start_time = clock();
     result = cf_heightmap_load(heightmap_path, &state.heightmap);
     clock_t end_time = clock();
     
     if (result != CF_SUCCESS) {
         fprintf(stderr, "错误: 加载高度图失败 (code: %d)\n", result);
-        fprintf(stderr, "请确保文件路径正确且文件为有效的PNG图像。\n");
+        fprintf(stderr, "请确保文件路径正确且文件为支持的格式。\n");
+        fprintf(stderr, "支持的格式: PNG, JPEG, BMP, TIFF, GeoTIFF\n");
         return 1;
     }
     
