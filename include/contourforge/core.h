@@ -13,6 +13,13 @@
 extern "C" {
 #endif
 
+/* ========== 前向声明 ========== */
+
+/**
+ * @brief 线程池句柄（前向声明）
+ */
+typedef struct cf_thread_pool cf_thread_pool_t;
+
 /* ========== 内存管理 ========== */
 
 /**

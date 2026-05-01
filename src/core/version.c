@@ -8,8 +8,8 @@
 #include <stdbool.h>
 
 /* 版本信息 */
-#define CF_VERSION_MAJOR 1
-#define CF_VERSION_MINOR 0
+#define CF_VERSION_MAJOR 0
+#define CF_VERSION_MINOR 2
 #define CF_VERSION_PATCH 0
 
 /* 初始化状态 */
